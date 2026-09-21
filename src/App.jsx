@@ -6,14 +6,14 @@ import QuestionBankView from './components/QuestionBankView';
 import ExamPortal from './components/ExamPortal';
 import GradingDashboard from './components/GradingDashboard';
 import InteractiveTools from './components/InteractiveTools';
-import { BookOpen, Layers, HelpCircle, Award, Cpu, ShieldCheck, Github } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('lessons');
   const [userRole, setUserRole] = useState('student'); // 'student' | 'tutor'
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-slate-950 font-sans">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col font-sans selection:bg-zinc-700 selection:text-zinc-100">
 
       {/* Top Main Navigation */}
       <Navbar
@@ -33,22 +33,22 @@ export default function App() {
         {activeTab === 'tools' && <InteractiveTools />}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-16 border-t border-slate-850 bg-slate-900/60 py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-500">
+      {/* Minimal Footer */}
+      <footer className="mt-16 border-t border-[#27272a] bg-[#0c0c0e] py-6 px-4 sm:px-6 text-xs text-zinc-500 font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-4 h-4 text-cyan-400" />
-            <span className="font-semibold text-slate-400">Pre-University STEM Foundation Tutoring Portal</span>
+            <span className="font-medium text-zinc-400">Pre-University STEM Foundation Tutoring Portal</span>
             <span>•</span>
             <span>Mathematics • Physics • Computer Science</span>
           </div>
 
-          <div className="flex items-center space-x-6 text-slate-400">
-            <button onClick={() => setActiveTab('lessons')} className="hover:text-cyan-300 transition-colors">Curriculum Notes</button>
-            <button onClick={() => setActiveTab('slides')} className="hover:text-cyan-300 transition-colors">Slide Decks</button>
-            <button onClick={() => setActiveTab('practice')} className="hover:text-cyan-300 transition-colors">Question Bank</button>
-            <button onClick={() => setActiveTab('exams')} className="hover:text-cyan-300 transition-colors">Exam Portal</button>
-            <button onClick={() => setActiveTab('grading')} className="hover:text-cyan-300 transition-colors">Gradebook</button>
+          <div className="flex items-center space-x-5 text-zinc-400 text-[11px]">
+            <button onClick={() => setActiveTab('lessons')} className="hover:text-zinc-200 transition-colors">Curriculum</button>
+            <button onClick={() => setActiveTab('slides')} className="hover:text-zinc-200 transition-colors">Slides</button>
+            <button onClick={() => setActiveTab('practice')} className="hover:text-zinc-200 transition-colors">Problems</button>
+            <button onClick={() => setActiveTab('exams')} className="hover:text-zinc-200 transition-colors">Examinations</button>
+            <button onClick={() => setActiveTab('grading')} className="hover:text-zinc-200 transition-colors">Gradebook</button>
+            <button onClick={() => setActiveTab('tools')} className="hover:text-zinc-200 transition-colors">Instruments</button>
           </div>
         </div>
       </footer>

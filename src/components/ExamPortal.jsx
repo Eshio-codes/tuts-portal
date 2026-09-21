@@ -4,7 +4,7 @@ import { QUESTION_BANK } from '../data/questionBank';
 import MathTex from './MathTex';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
-  ChevronLeft, ChevronRight, FileText, Award, Check
+  ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw
 } from 'lucide-react';
 
 export default function ExamPortal({ onExamSubmitted }) {
@@ -116,13 +116,13 @@ export default function ExamPortal({ onExamSubmitted }) {
       studentId: studentId || 'STU-2026',
       examId: activeExam.id,
       submittedAt: new Date().toISOString(),
-      status: 'Pending', // Pending tutor manual review for free-response
+      status: 'Pending',
       answers,
       scores,
       totalScore: autoScore,
       maxScore: activeExam.totalPoints,
       percentage: Math.round((autoScore / activeExam.totalPoints) * 100),
-      feedback: 'Preliminary automated score recorded. Tutor manual review pending for free response.'
+      feedback: 'Preliminary automated score recorded. Tutor manual review pending for free-response derivations.'
     };
 
     // Save to LocalStorage
@@ -144,7 +144,6 @@ export default function ExamPortal({ onExamSubmitted }) {
   };
 
   const handleAutoSubmit = () => {
-    alert('Time has expired! Submitting your exam now.');
     handleFinalSubmit();
   };
 
@@ -155,91 +154,96 @@ export default function ExamPortal({ onExamSubmitted }) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
       {/* 1. Exam Selection / Pre-flight Screen */}
       {!isExamActive && !submittedReceipt && (
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-extrabold text-white tracking-tight">Formal Tests & Exam Portal</h1>
-            <p className="text-sm text-slate-400">Standardized, timed assessments with automated marking & tutor rubric review.</p>
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="border-b border-[#27272a] pb-4">
+            <h1 className="text-xl font-semibold text-zinc-100 tracking-tight">Formal Examination Portal</h1>
+            <p className="text-xs text-zinc-400 mt-0.5">Timed standardized assessments with automated marking and rubric derivation review.</p>
           </div>
 
-          {/* Exam Selector Cards */}
+          {/* Assessment List */}
           <div className="space-y-3">
-            <label className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Select Assessment:</label>
-            <div className="grid grid-cols-1 gap-3">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-400 block">
+              Available Assessments:
+            </label>
+            <div className="space-y-2.5">
               {EXAMS.map((ex) => {
                 const isSelected = ex.id === selectedExamId;
                 return (
                   <div
                     key={ex.id}
                     onClick={() => setSelectedExamId(ex.id)}
-                    className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-slate-900 border-cyan-500 shadow-lg shadow-cyan-500/10'
-                        : 'bg-slate-900/40 border-slate-800 hover:border-slate-700'
+                        ? 'bg-[#18181c] border-zinc-600 shadow-sm'
+                        : 'bg-[#121215] border-[#27272a] hover:border-zinc-700'
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300">
-                        {ex.subject.toUpperCase()}
-                      </span>
-                      <span className="text-xs font-mono text-slate-400 flex items-center space-x-1">
-                        <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{ex.timeLimitMinutes} Mins</span>
-                        <span className="mx-1.5">•</span>
-                        <Award className="w-3.5 h-3.5 text-purple-400" />
-                        <span>{ex.totalPoints} Marks</span>
-                      </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[11px] font-mono uppercase px-1.5 py-0.2 rounded bg-zinc-850 border border-zinc-700 text-zinc-300 font-semibold">
+                          {ex.subject}
+                        </span>
+                        <span className="text-xs font-semibold text-zinc-200">{ex.title}</span>
+                      </div>
+                      <div className="text-xs font-mono text-zinc-400 flex items-center space-x-2">
+                        <span>{ex.timeLimitMinutes} mins</span>
+                        <span>•</span>
+                        <span>{ex.totalPoints} marks</span>
+                      </div>
                     </div>
-                    <div className="text-base font-bold text-white mb-1">{ex.title}</div>
-                    <div className="text-xs text-slate-400">{ex.description}</div>
+                    <div className="text-xs text-zinc-400 leading-relaxed">{ex.description}</div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Student Profile & Launch Box */}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-sm font-bold text-slate-200">Candidate Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Candidate Registration Panel */}
+          <div className="p-5 rounded-lg bg-[#121215] border border-[#27272a] space-y-4">
+            <div className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-wider">
+              Candidate Information
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-mono text-slate-400 mb-1">Student Full Name *</label>
+                <label className="block text-xs font-mono text-zinc-400 mb-1">Full Name *</label>
                 <input
                   type="text"
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
                   placeholder="e.g. Alex Mercer"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 text-xs font-mono focus:outline-none focus:border-zinc-500"
                 />
               </div>
               <div>
-                <label className="block text-xs font-mono text-slate-400 mb-1">Student ID (Optional)</label>
+                <label className="block text-xs font-mono text-zinc-400 mb-1">Student ID (Optional)</label>
                 <input
                   type="text"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
-                  placeholder="e.g. STU-2026-001"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-cyan-500"
+                  placeholder="e.g. STU-2026-01"
+                  className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 text-xs font-mono focus:outline-none focus:border-zinc-500"
                 />
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-400 leading-relaxed space-y-1">
-              <div className="font-bold text-slate-300">Exam Instructions:</div>
-              <div>• Ensure a quiet environment before starting. Timer cannot be paused.</div>
-              <div>• Answers are saved automatically in your browser as you type.</div>
-              <div>• Multiple-choice and numeric problems are auto-marked upon submission; derivations will be reviewed by your tutor.</div>
+            <div className="p-3.5 rounded bg-[#09090b] border border-[#27272a] text-xs text-zinc-400 space-y-1 font-mono">
+              <div className="text-zinc-300 font-semibold mb-1">Examination Instructions:</div>
+              <div>• Assessment timer runs continuously once launched.</div>
+              <div>• Work is saved automatically in session storage.</div>
+              <div>• Multiple choice and numeric inputs are validated automatically upon final submission.</div>
             </div>
 
             <button
               onClick={handleStartExam}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-extrabold text-sm hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2"
+              className="w-full py-2.5 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono font-semibold text-xs transition-all flex items-center justify-center space-x-1.5"
             >
-              <span>Begin Exam Now</span>
-              <ChevronRight className="w-4 h-4" />
+              <span>Begin Examination</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -247,45 +251,45 @@ export default function ExamPortal({ onExamSubmitted }) {
 
       {/* 2. Active Timed Exam Session */}
       {isExamActive && currentQ && (
-        <div className="space-y-6">
+        <div className="space-y-4">
 
-          {/* Sticky Status & Timer Header */}
-          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+          {/* Status & Timer Command Header */}
+          <div className="p-4 rounded-lg bg-[#121215] border border-[#27272a] flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-xs font-mono font-bold text-cyan-400">{activeExam.title}</div>
-              <div className="text-xs text-slate-400">Candidate: {studentName} ({studentId || 'STU'})</div>
+              <div className="text-xs font-mono font-semibold text-zinc-200">{activeExam.title}</div>
+              <div className="text-xs text-zinc-400 font-mono mt-0.5">Candidate: {studentName} ({studentId || 'STU-01'})</div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* Countdown Clock */}
-              <div className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl font-mono text-sm font-bold border ${
+              <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-md font-mono text-xs font-semibold border ${
                 timeLeftSeconds < 300
-                  ? 'bg-rose-950/60 text-rose-300 border-rose-600 animate-pulse'
-                  : 'bg-slate-950 text-cyan-300 border-slate-800'
+                  ? 'bg-rose-950/40 text-rose-300 border-rose-800'
+                  : 'bg-[#09090b] text-zinc-200 border-[#27272a]'
               }`}>
-                <Clock className="w-4 h-4" />
+                <Clock className="w-3.5 h-3.5 text-zinc-400" />
                 <span>{formatTime(timeLeftSeconds)}</span>
               </div>
 
               {/* Submit Button */}
               <button
                 onClick={() => setShowSubmitModal(true)}
-                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-emerald-500/20"
+                className="px-3.5 py-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-950 font-mono font-semibold text-xs flex items-center space-x-1.5 transition-all"
               >
-                <Send className="w-3.5 h-3.5" />
-                <span>Finish & Submit</span>
+                <Send className="w-3 h-3" />
+                <span>Submit Exam</span>
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
-            {/* Left: Question Jump Drawer */}
-            <div className="lg:col-span-1 p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-              <div className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
-                Question Map ({examQuestions.length})
+            {/* Left: Question Map Matrix (3 cols) */}
+            <div className="lg:col-span-4 p-4 rounded-lg bg-[#121215] border border-[#27272a] space-y-3">
+              <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-400">
+                Question Index ({examQuestions.length})
               </div>
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5">
                 {examQuestions.map((q, idx) => {
                   const isCurrent = idx === currentQuestionIndex;
                   const isAnswered = answers[q.id] !== undefined && answers[q.id] !== '';
@@ -295,72 +299,72 @@ export default function ExamPortal({ onExamSubmitted }) {
                     <button
                       key={q.id}
                       onClick={() => setCurrentQuestionIndex(idx)}
-                      className={`relative p-2.5 rounded-xl text-xs font-mono font-bold border transition-all ${
+                      className={`relative p-2 rounded text-xs font-mono border transition-all ${
                         isCurrent
-                          ? 'bg-cyan-500 text-slate-950 border-cyan-400 shadow-md'
+                          ? 'bg-zinc-800 text-zinc-100 border-zinc-500 font-semibold'
                           : isAnswered
-                          ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                          ? 'bg-[#18181c] text-zinc-200 border-zinc-700'
+                          : 'bg-[#09090b] text-zinc-500 border-[#27272a] hover:border-zinc-700'
                       }`}
                     >
                       <span>Q{idx + 1}</span>
                       {isFlagged && (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full ring-2 ring-slate-900" />
+                        <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-amber-400 rounded-full" />
                       )}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="pt-4 border-t border-slate-800/80 text-[11px] space-y-1.5 text-slate-400">
+              <div className="pt-3 border-t border-[#27272a] text-[11px] font-mono space-y-1 text-zinc-400">
                 <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 rounded bg-emerald-950 border border-emerald-700"></span>
+                  <span className="w-2.5 h-2.5 rounded bg-[#18181c] border border-zinc-700"></span>
                   <span>Answered</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="w-3 h-3 rounded bg-slate-950 border border-slate-800"></span>
+                  <span className="w-2.5 h-2.5 rounded bg-[#09090b] border border-[#27272a]"></span>
                   <span>Unanswered</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                   <span>Flagged for Review</span>
                 </div>
               </div>
             </div>
 
-            {/* Right: Active Question Canvas */}
-            <div className="lg:col-span-3 p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col justify-between min-h-[480px]">
+            {/* Right: Question Workbench (8 cols) */}
+            <div className="lg:col-span-8 p-6 rounded-lg bg-[#121215] border border-[#27272a] flex flex-col justify-between min-h-[460px]">
               <div>
                 {/* Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+                <div className="flex items-center justify-between pb-3 border-b border-[#27272a] mb-4">
                   <div>
-                    <span className="text-xs font-mono text-cyan-400 font-bold uppercase">
+                    <span className="text-xs font-mono text-zinc-400 uppercase">
                       {currentQ.sectionTitle || 'Section'} • Question {currentQuestionIndex + 1}
                     </span>
-                    <h3 className="text-lg font-bold text-white mt-0.5">{currentQ.title}</h3>
+                    <h3 className="text-base font-semibold text-zinc-100 mt-0.5">{currentQ.title}</h3>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => toggleFlag(currentQ.id)}
-                      className={`p-2 rounded-lg border text-xs font-medium flex items-center space-x-1.5 ${
+                      className={`px-2.5 py-1 rounded border text-xs font-mono flex items-center space-x-1.5 transition-all ${
                         flaggedQuestions[currentQ.id]
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                          : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                          ? 'bg-amber-950/40 text-amber-300 border-amber-800/60'
+                          : 'bg-[#09090b] text-zinc-400 border-[#27272a] hover:text-zinc-200'
                       }`}
                       title="Flag question for review"
                     >
-                      <Flag className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Flag</span>
+                      <Flag className="w-3 h-3" />
+                      <span>Flag</span>
                     </button>
-                    <span className="text-xs font-mono font-bold text-purple-400 px-2.5 py-1 rounded bg-purple-500/10 border border-purple-500/30">
-                      {currentQ.points || 4} Marks
+                    <span className="text-xs font-mono font-semibold text-zinc-300 px-2 py-0.5 rounded bg-[#09090b] border border-[#27272a]">
+                      {currentQ.points || 4} pts
                     </span>
                   </div>
                 </div>
 
                 {/* Prompt */}
-                <div className="text-white text-base leading-relaxed mb-6 font-medium">
+                <div className="text-zinc-100 text-sm leading-relaxed mb-6">
                   {currentQ.mathPrompt ? (
                     <div className="space-y-2">
                       <p>{currentQ.prompt.split('\n\n')[0]}</p>
@@ -369,30 +373,30 @@ export default function ExamPortal({ onExamSubmitted }) {
                       )}
                     </div>
                   ) : (
-                    <p>{currentQ.prompt}</p>
+                    <p className="text-zinc-200">{currentQ.prompt}</p>
                   )}
                 </div>
 
-                {/* Input Area */}
-                <div className="space-y-4 mb-8">
+                {/* Input Controls */}
+                <div className="space-y-4 mb-6">
                   {currentQ.type === 'multiple-choice' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {currentQ.options.map((opt, optIdx) => {
                         const isChosen = answers[currentQ.id] === optIdx;
                         return (
                           <button
                             key={optIdx}
                             onClick={() => handleAnswerChange(currentQ.id, optIdx)}
-                            className={`p-4 rounded-xl border text-left flex items-center space-x-3 transition-all ${
+                            className={`p-3 rounded-md border text-left flex items-center space-x-2.5 transition-all ${
                               isChosen
-                                ? 'bg-cyan-500/20 border-cyan-500 text-cyan-200 font-bold shadow-md'
-                                : 'bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-850 hover:border-slate-700'
+                                ? 'bg-[#18181c] border-zinc-500 text-zinc-100 font-medium'
+                                : 'bg-[#09090b] border-[#27272a] text-zinc-300 hover:border-zinc-700'
                             }`}
                           >
-                            <span className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-mono font-bold text-slate-400">
+                            <span className="w-5 h-5 rounded bg-zinc-800 flex items-center justify-center text-xs font-mono font-semibold text-zinc-400">
                               {String.fromCharCode(65 + optIdx)}
                             </span>
-                            <span className="text-sm">
+                            <span className="text-xs sm:text-sm">
                               {opt.includes('\\') ? <MathTex math={opt} /> : opt}
                             </span>
                           </button>
@@ -402,9 +406,9 @@ export default function ExamPortal({ onExamSubmitted }) {
                   )}
 
                   {currentQ.type === 'numeric' && (
-                    <div className="max-w-sm">
-                      <label className="block text-xs font-mono text-slate-400 mb-2">
-                        Enter numeric answer {currentQ.unit && `(${currentQ.unit})`}:
+                    <div className="max-w-xs space-y-1.5">
+                      <label className="block text-xs font-mono text-zinc-400">
+                        Enter numeric value {currentQ.unit && `(${currentQ.unit})`}:
                       </label>
                       <input
                         type="number"
@@ -412,22 +416,22 @@ export default function ExamPortal({ onExamSubmitted }) {
                         value={answers[currentQ.id] || ''}
                         onChange={(e) => handleAnswerChange(currentQ.id, e.target.value)}
                         placeholder="e.g. 11.0"
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 font-mono text-sm focus:outline-none focus:border-zinc-500"
                       />
                     </div>
                   )}
 
                   {currentQ.type === 'free-response' && (
-                    <div className="space-y-2">
-                      <label className="block text-xs font-mono text-slate-400">
-                        Type derivation / calculation steps:
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-mono text-zinc-400">
+                        Derivation & mathematical working:
                       </label>
                       <textarea
                         rows={6}
                         value={answers[currentQ.id] || ''}
                         onChange={(e) => handleAnswerChange(currentQ.id, e.target.value)}
                         placeholder="State your formulas, substitutions, and conclusion clearly..."
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 font-mono text-xs focus:outline-none focus:border-zinc-500"
                       />
                     </div>
                   )}
@@ -435,35 +439,35 @@ export default function ExamPortal({ onExamSubmitted }) {
               </div>
 
               {/* Navigation Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-3 border-t border-[#27272a]">
                 <button
                   onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
                   disabled={currentQuestionIndex === 0}
-                  className={`px-4 py-2 rounded-xl text-xs font-medium flex items-center space-x-1.5 ${
+                  className={`px-3 py-1.5 rounded text-xs font-mono border transition-all ${
                     currentQuestionIndex === 0
-                      ? 'bg-slate-900 text-slate-600 cursor-not-allowed'
-                      : 'bg-slate-800 text-white hover:bg-slate-750'
+                      ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                      : 'bg-zinc-850 border-zinc-700 text-zinc-200 hover:bg-zinc-800'
                   }`}
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-3.5 h-3.5 inline mr-1" />
                   <span>Previous</span>
                 </button>
 
-                <div className="text-xs text-slate-500 font-mono">
+                <div className="text-xs text-zinc-400 font-mono">
                   {Object.keys(answers).length} of {examQuestions.length} answered
                 </div>
 
                 <button
                   onClick={() => setCurrentQuestionIndex((prev) => Math.min(prev + 1, examQuestions.length - 1))}
                   disabled={currentQuestionIndex === examQuestions.length - 1}
-                  className={`px-4 py-2 rounded-xl text-xs font-medium flex items-center space-x-1.5 ${
+                  className={`px-3 py-1.5 rounded text-xs font-mono border transition-all ${
                     currentQuestionIndex === examQuestions.length - 1
-                      ? 'bg-slate-900 text-slate-600 cursor-not-allowed'
-                      : 'bg-slate-800 text-white hover:bg-slate-750'
+                      ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                      : 'bg-zinc-850 border-zinc-700 text-zinc-200 hover:bg-zinc-800'
                   }`}
                 >
                   <span>Next</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3.5 h-3.5 inline ml-1" />
                 </button>
               </div>
             </div>
@@ -474,28 +478,28 @@ export default function ExamPortal({ onExamSubmitted }) {
 
       {/* Submit Confirmation Modal */}
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-white flex items-center space-x-2">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-[#121215] border border-zinc-700 rounded-lg p-5 space-y-4 shadow-2xl">
+            <h3 className="text-sm font-semibold text-zinc-100 flex items-center space-x-2">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
               <span>Confirm Exam Submission</span>
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              You have answered <span className="text-cyan-400 font-bold">{Object.keys(answers).length}</span> out of{' '}
-              <span className="font-bold">{examQuestions.length}</span> questions. Once submitted, your exam will be recorded and cannot be changed.
+            <p className="text-xs text-zinc-300 leading-relaxed font-mono">
+              You have answered <span className="text-zinc-100 font-bold">{Object.keys(answers).length}</span> of{' '}
+              <span className="font-bold">{examQuestions.length}</span> questions. Once submitted, your answers cannot be altered.
             </p>
-            <div className="flex items-center justify-end space-x-3 pt-2">
+            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#27272a]">
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-medium hover:bg-slate-700"
+                className="px-3 py-1.5 rounded bg-zinc-850 border border-zinc-700 text-zinc-300 text-xs font-mono hover:bg-zinc-800"
               >
-                Continue Exam
+                Return to Exam
               </button>
               <button
                 onClick={handleFinalSubmit}
-                className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20"
+                className="px-3 py-1.5 rounded bg-zinc-100 text-zinc-950 text-xs font-mono font-semibold hover:bg-zinc-200"
               >
-                Submit Now
+                Confirm & Submit
               </button>
             </div>
           </div>
@@ -504,43 +508,43 @@ export default function ExamPortal({ onExamSubmitted }) {
 
       {/* 3. Submission Complete Receipt */}
       {submittedReceipt && (
-        <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-            <Check className="w-8 h-8" />
+        <div className="max-w-xl mx-auto p-6 rounded-lg bg-[#121215] border border-[#27272a] shadow-xl text-center space-y-5">
+          <div className="w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-800 text-emerald-400 flex items-center justify-center mx-auto">
+            <Check className="w-6 h-6" />
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-2xl font-extrabold text-white">Exam Submitted Successfully!</h2>
-            <p className="text-xs text-slate-400 font-mono">Submission ID: {submittedReceipt.id}</p>
+            <h2 className="text-lg font-semibold text-zinc-100">Examination Submitted</h2>
+            <p className="text-xs text-zinc-400 font-mono">Reference: {submittedReceipt.id}</p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 grid grid-cols-2 gap-4 text-left">
+          <div className="p-4 rounded bg-[#09090b] border border-[#27272a] grid grid-cols-2 gap-3 text-left font-mono text-xs">
             <div>
-              <div className="text-xs text-slate-500">Student</div>
-              <div className="text-sm font-bold text-white">{submittedReceipt.studentName}</div>
+              <div className="text-zinc-500 text-[11px]">Candidate</div>
+              <div className="text-zinc-200 font-semibold">{submittedReceipt.studentName}</div>
             </div>
             <div>
-              <div className="text-xs text-slate-500">Submitted At</div>
-              <div className="text-sm font-mono text-slate-300">
+              <div className="text-zinc-500 text-[11px]">Timestamp</div>
+              <div className="text-zinc-300">
                 {new Date(submittedReceipt.submittedAt).toLocaleTimeString()}
               </div>
             </div>
             <div>
-              <div className="text-xs text-slate-500">Auto-Marked Points</div>
-              <div className="text-base font-bold text-cyan-400 font-mono">
+              <div className="text-zinc-500 text-[11px]">Auto-Scored Marks</div>
+              <div className="text-zinc-100 font-bold">
                 {submittedReceipt.totalScore} / {submittedReceipt.maxScore}
               </div>
             </div>
             <div>
-              <div className="text-xs text-slate-500">Status</div>
-              <span className="inline-block text-xs font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+              <div className="text-zinc-500 text-[11px]">Status</div>
+              <span className="text-amber-400">
                 Pending Tutor Review
               </span>
             </div>
           </div>
 
-          <p className="text-xs text-slate-400">
-            Automated questions have been scored. Free-response problems are ready in the Tutor Grading Dashboard for marking.
+          <p className="text-xs text-zinc-400">
+            Objective questions have been scored. Free-response problems are ready in the Tutor Gradebook.
           </p>
 
           <button
@@ -548,9 +552,9 @@ export default function ExamPortal({ onExamSubmitted }) {
               setSubmittedReceipt(null);
               setIsExamActive(false);
             }}
-            className="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold"
+            className="px-4 py-2 rounded bg-zinc-850 hover:bg-zinc-800 text-zinc-200 text-xs font-mono border border-zinc-700"
           >
-            Return to Exam Portal
+            Return to Exam Index
           </button>
         </div>
       )}

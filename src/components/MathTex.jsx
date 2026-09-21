@@ -19,8 +19,8 @@ export default function MathTex({ math, block = false, className = '' }) {
   }, [math, block]);
 
   if (block) {
-    return <div ref={containerRef} className={`overflow-x-auto my-2 text-center text-cyan-300 ${className}`} />;
+    return <div ref={containerRef} className={`overflow-x-auto my-2 text-center text-zinc-100 ${className}`} />;
   }
 
-  return <span ref={containerRef} className={`inline-block px-1 text-cyan-300 font-serif ${className}`} />;
+  return <span ref={containerRef} className={`inline-block px-0.5 text-zinc-100 font-serif ${className}`} />;
 }
