@@ -1,115 +1,141 @@
 export const EXAMS = [
   {
+    id: 'exam-math-mastery',
+    title: 'Mathematics Unit Mastery Examination',
+    subject: 'math',
+    timeLimitMinutes: 90,
+    totalPoints: 160,
+    description: 'Comprehensive 40-question examination covering Functions, Limits, Differential Calculus, Optimization, Integral Calculus, Vectors, and Numerical Methods.',
+    instructions: 'All questions are deterministic Multiple Choice or Precision Numeric answers. Active anti-cheat proctoring is enabled.',
+    sections: [
+      {
+        id: 'sec-math-1',
+        title: 'Part 1: Functions, Domain/Range & Limits',
+        points: 40,
+        questions: ['m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10']
+      },
+      {
+        id: 'sec-math-2',
+        title: 'Part 2: Derivatives, Chain Rule & Tangents',
+        points: 40,
+        questions: ['m11', 'm12', 'm13', 'm14', 'm15', 'm16', 'm17', 'm18', 'm19', 'm20']
+      },
+      {
+        id: 'sec-math-3',
+        title: 'Part 3: Definite/Indefinite Integrals & Applications',
+        points: 40,
+        questions: ['m21', 'm22', 'm23', 'm24', 'm25', 'm26', 'm27', 'm28', 'm29', 'm30']
+      },
+      {
+        id: 'sec-math-4',
+        title: 'Part 4: Linear Algebra, Vectors & Numerical Methods',
+        points: 40,
+        questions: ['m31', 'm32', 'm33', 'm34', 'm35', 'm36', 'm37', 'm38', 'm39', 'm40']
+      }
+    ]
+  },
+  {
+    id: 'exam-physics-mastery',
+    title: 'Physics Unit Mastery Examination',
+    subject: 'physics',
+    timeLimitMinutes: 90,
+    totalPoints: 160,
+    description: 'Comprehensive 40-question examination covering 1D/2D Kinematics, Projectiles, Newton\'s Laws, Work-Energy, Momentum, Rotational Dynamics, and DC/AC Circuits.',
+    instructions: 'All calculation questions require exact numeric values or multiple-choice selections with appropriate SI units. Active anti-cheat proctoring is enabled.',
+    sections: [
+      {
+        id: 'sec-phys-1',
+        title: 'Part 1: 1D & 2D Kinematics & Projectiles',
+        points: 40,
+        questions: ['p01', 'p02', 'p03', 'p04', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10']
+      },
+      {
+        id: 'sec-phys-2',
+        title: 'Part 2: Dynamics, Newton\'s Laws & Work-Energy',
+        points: 40,
+        questions: ['p11', 'p12', 'p13', 'p14', 'p15', 'p16', 'p17', 'p18', 'p19', 'p20']
+      },
+      {
+        id: 'sec-phys-3',
+        title: 'Part 3: Momentum, Collisions & Rotational Physics',
+        points: 40,
+        questions: ['p21', 'p22', 'p23', 'p24', 'p25', 'p26', 'p27', 'p28', 'p29', 'p30']
+      },
+      {
+        id: 'sec-phys-4',
+        title: 'Part 4: DC Circuit Networks, Dividers & AC Resonators',
+        points: 40,
+        questions: ['p31', 'p32', 'p33', 'p34', 'p35', 'p36', 'p37', 'p38', 'p39', 'p40']
+      }
+    ]
+  },
+  {
+    id: 'exam-cs-mastery',
+    title: 'Computer Science Unit Mastery Examination',
+    subject: 'cs',
+    timeLimitMinutes: 100,
+    totalPoints: 200,
+    description: 'Comprehensive 50-question examination covering CPU Architecture, Number Systems, 2\'s Complement, IEEE 754 Floating-Point, Bitwise Logic, Python Programming, Algorithmic Complexity, and Logic Gates.',
+    instructions: 'Deterministic multiple-choice and numeric code outputs. Active anti-cheat proctoring is enabled.',
+    sections: [
+      {
+        id: 'sec-cs-1',
+        title: 'Part 1: Von Neumann Architecture & Number Bases',
+        points: 40,
+        questions: ['cs01', 'cs02', 'cs03', 'cs04', 'cs05', 'cs06', 'cs07', 'cs08', 'cs09', 'cs10']
+      },
+      {
+        id: 'sec-cs-2',
+        title: 'Part 2: Two\'s Complement & IEEE 754 Floating Point',
+        points: 40,
+        questions: ['cs11', 'cs12', 'cs13', 'cs14', 'cs15', 'cs16', 'cs17', 'cs18', 'cs19', 'cs20']
+      },
+      {
+        id: 'sec-cs-3',
+        title: 'Part 3: Bitwise Operations & Python Fundamentals',
+        points: 40,
+        questions: ['cs21', 'cs22', 'cs23', 'cs24', 'cs25', 'cs26', 'cs27', 'cs28', 'cs29', 'cs30']
+      },
+      {
+        id: 'sec-cs-4',
+        title: 'Part 4: Loops, Functions, Recursion & Scoping',
+        points: 40,
+        questions: ['cs31', 'cs32', 'cs33', 'cs34', 'cs35', 'cs36', 'cs37', 'cs38', 'cs39', 'cs40']
+      },
+      {
+        id: 'sec-cs-5',
+        title: 'Part 5: Algorithms, Complexity & Digital Logic Gates',
+        points: 40,
+        questions: ['cs41', 'cs42', 'cs43', 'cs44', 'cs45', 'cs46', 'cs47', 'cs48', 'cs49', 'cs50']
+      }
+    ]
+  },
+  {
     id: 'exam-stem-s2',
-    title: 'Sprint Assessment: Session 2 STEM Comprehensive Exam',
+    title: 'STEM Sprint Combined Assessment',
     subject: 'combined',
     timeLimitMinutes: 60,
-    totalPoints: 50,
-    description: 'Timed assessment covering Physics DC Circuits & Dividers, CS IEEE 754 & Bitwise Logic, and Math Limit Laws.',
-    instructions: 'Answer all questions. For numerical questions, provide answers with appropriate precision. For free-response questions, show all intermediate steps and derivations.',
+    totalPoints: 120,
+    description: '30-question cross-disciplinary exam testing core Mathematics limits, Physics circuits/kinematics, and CS data representation.',
+    instructions: '10 questions per subject section. Active anti-cheat proctoring enabled.',
     sections: [
       {
-        id: 'sec-math',
-        title: 'Section A: Mathematics (Limits & Continuity)',
-        points: 16,
-        questions: ['m1-01', 'm1-02', 'm2-01']
+        id: 'sec-stem-math',
+        title: 'Section A: Mathematics Core',
+        points: 40,
+        questions: ['m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10']
       },
       {
-        id: 'sec-physics',
-        title: 'Section B: Physics (DC Circuits & Internal Resistance)',
-        points: 17,
-        questions: ['p2-01', 'p2-02', 'p2-03']
+        id: 'sec-stem-phys',
+        title: 'Section B: Physics Core',
+        points: 40,
+        questions: ['p01', 'p02', 'p03', 'p04', 'p05', 'p06', 'p07', 'p08', 'p09', 'p10']
       },
       {
-        id: 'sec-cs',
-        title: 'Section C: Computer Science (Float Encoding & Bitwise Logic)',
-        points: 17,
-        questions: ['cs2-01', 'cs2-02', 'cs2-03']
-      }
-    ]
-  },
-  {
-    id: 'exam-calculus-mastery',
-    title: 'Mathematics Unit Mastery: Differential Calculus & Optimization',
-    subject: 'math',
-    timeLimitMinutes: 45,
-    totalPoints: 35,
-    description: 'Comprehensive evaluation of domain restrictions, conjugate limits, first principles, quotient rules, and real-world box volume optimization.',
-    instructions: 'All calculations must be accompanied by appropriate algebraic steps.',
-    sections: [
-      {
-        id: 'sec-math-mastery',
-        title: 'Differential Calculus & Optimization Suite',
-        points: 35,
-        questions: ['m1-01', 'm1-02', 'm2-02', 'm3-01', 'm3-02', 'm4-01']
-      }
-    ]
-  },
-  {
-    id: 'exam-physics-unit1',
-    title: 'Physics Unit 1 Mastery Exam: Kinematics & Circuits',
-    subject: 'physics',
-    timeLimitMinutes: 45,
-    totalPoints: 30,
-    description: 'Focused test on 1D/2D Kinematics, Projectile Independence, and DC Circuit analysis with Kirchhoff’s Laws.',
-    instructions: 'Calculators permitted. State units in all numeric answers.',
-    sections: [
-      {
-        id: 'sec-phys-all',
-        title: 'Physics Kinematics & Circuit Mastery',
-        points: 30,
-        questions: ['p1-01', 'p1-02', 'p2-01', 'p2-02', 'p2-03']
-      }
-    ]
-  },
-  {
-    id: 'exam-physics-mechanics-energy',
-    title: 'Physics Unit 2: Energy, Momentum & Rotations',
-    subject: 'physics',
-    timeLimitMinutes: 45,
-    totalPoints: 25,
-    description: 'Work-Energy Theorem, Momentum Inelastic Collisions, Torque calculations, and Capacitor storage.',
-    instructions: 'Show scalar energy and vector momentum balances clearly.',
-    sections: [
-      {
-        id: 'sec-phys-mechanics',
-        title: 'Energy & Dynamics Problems',
-        points: 25,
-        questions: ['p3-01', 'p4-01', 'p5-01', 'p6-01']
-      }
-    ]
-  },
-  {
-    id: 'exam-cs-unit1',
-    title: 'CS Unit 1 Mastery Exam: Hardware & Data Representation',
-    subject: 'cs',
-    timeLimitMinutes: 45,
-    totalPoints: 30,
-    description: 'Hardware architecture, Von Neumann CPU cycle, 2’s complement arithmetic, and IEEE 754 floating-point standard.',
-    instructions: 'Binary arithmetic and bitwise derivations required.',
-    sections: [
-      {
-        id: 'sec-cs-all',
-        title: 'Computer Systems & Number Formats',
-        points: 30,
-        questions: ['cs1-01', 'cs2-01', 'cs2-02', 'cs2-03']
-      }
-    ]
-  },
-  {
-    id: 'exam-cs-algorithms-logic',
-    title: 'CS Unit 2: Algorithms, Data Structures & Logic Gates',
-    subject: 'cs',
-    timeLimitMinutes: 45,
-    totalPoints: 25,
-    description: 'Big-O recurrence analysis, Stack/Queue memory disciplines, Binary search limits, and De Morgan Boolean gates.',
-    instructions: 'State complexity in tight Theta or Big-O bounds.',
-    sections: [
-      {
-        id: 'sec-cs-algo',
-        title: 'Algorithmic Complexity & Logic',
-        points: 25,
-        questions: ['cs3-01', 'cs4-01', 'cs5-01', 'cs6-01']
+        id: 'sec-stem-cs',
+        title: 'Section C: Computer Science Core',
+        points: 40,
+        questions: ['cs01', 'cs02', 'cs03', 'cs04', 'cs05', 'cs06', 'cs07', 'cs08', 'cs09', 'cs10']
       }
     ]
   }
@@ -122,55 +148,58 @@ export const INITIAL_SUBMISSIONS = [
     studentId: 'STU-2026-001',
     examId: 'exam-stem-s2',
     submittedAt: '2026-09-20T14:30:00Z',
-    status: 'Graded', // 'Pending' | 'Graded'
+    status: 'Graded',
     answers: {
-      'm1-01': 1,
-      'm1-02': '0.167',
-      'm2-01': 'Continuity at x=2 requires 2a+3 = 5 => a=1. Also 2(2)^2 + b = 8+b = 5 => b = -3.',
-      'p2-01': 1,
-      'p2-02': '11.0',
-      'p2-03': 'Part A: I = Vin / (R1+R2), Vout = I*R2 = 30 * (200/300) = 20V. Part C: 200 || 200 = 100 ohms. Vout_loaded = 30 * (100 / 200) = 15V.',
-      'cs2-01': 0,
-      'cs2-02': '80',
-      'cs2-03': '13.625 = 1101.101_2 = 1.101101 * 2^3. Sign=1, Biased Exponent=3+127=130 (10000010), Mantissa=10110100000000000000000. Hex: 0xC15A0000.'
+      'm01': 1,
+      'm02': 0,
+      'm03': '0.167',
+      'm04': 0,
+      'p01': '90',
+      'p02': '30',
+      'p03': 0,
+      'cs01': 0,
+      'cs02': 0,
+      'cs06': '180'
     },
     scores: {
-      'm1-01': 4,
-      'm1-02': 4,
-      'm2-01': 8,
-      'p2-01': 3,
-      'p2-02': 4,
-      'p2-03': 10,
-      'cs2-01': 3,
-      'cs2-02': 4,
-      'cs2-03': 10
+      'm01': 4,
+      'm02': 4,
+      'm03': 4,
+      'm04': 4,
+      'p01': 4,
+      'p02': 4,
+      'p03': 4,
+      'cs01': 4,
+      'cs02': 4,
+      'cs06': 4
     },
-    totalScore: 50,
-    maxScore: 50,
+    totalScore: 40,
+    maxScore: 40,
     percentage: 100,
-    feedback: 'Outstanding performance across all three subjects! Full marks on IEEE 754 manual encoding and circuit loading derivation.'
+    feedback: 'Flawless performance across all objective questions and numeric inputs.'
   },
   {
     id: 'sub-002',
     studentName: 'Elena Rostova',
     studentId: 'STU-2026-002',
-    examId: 'exam-stem-s2',
+    examId: 'exam-math-mastery',
     submittedAt: '2026-09-21T09:15:00Z',
     status: 'Pending',
     answers: {
-      'm1-01': 1,
-      'm1-02': '0.166',
-      'm2-01': 'At x=2: 2a+3=5 => a=1. 2(2)^2 + b = 8+b=5 => b=-3.',
-      'p2-01': 1,
-      'p2-02': '11.0',
-      'p2-03': 'Vout = 30 * (200/300) = 20V. When loaded, R_parallel = 100 ohms, so Vout = 15V.',
-      'cs2-01': 0,
-      'cs2-02': '80',
-      'cs2-03': '13.625 is 1101.101. Normalizes to 1.101101 * 2^3. S=1, E=130, M=10110100... Hex is 0xC15A0000.'
+      'm01': 1,
+      'm02': 0,
+      'm03': '0.167',
+      'm04': 0,
+      'm05': 0,
+      'm06': 2,
+      'm07': '3',
+      'm08': 1,
+      'm09': 0,
+      'm10': 0
     },
     scores: {},
     totalScore: 0,
-    maxScore: 50,
+    maxScore: 160,
     percentage: 0,
     feedback: ''
   },
@@ -178,20 +207,20 @@ export const INITIAL_SUBMISSIONS = [
     id: 'sub-003',
     studentName: 'Marcus Vance',
     studentId: 'STU-2026-003',
-    examId: 'exam-calculus-mastery',
+    examId: 'exam-physics-mastery',
     submittedAt: '2026-09-21T10:45:00Z',
     status: 'Pending',
     answers: {
-      'm1-01': 1,
-      'm1-02': '0.167',
-      'm2-02': 2,
-      'm3-01': 0,
-      'm3-02': '8.0',
-      'm4-01': '2.0'
+      'p01': '90',
+      'p02': '30',
+      'p03': 0,
+      'p04': '60',
+      'p05': 0,
+      'p06': '20'
     },
     scores: {},
     totalScore: 0,
-    maxScore: 35,
+    maxScore: 160,
     percentage: 0,
     feedback: ''
   }

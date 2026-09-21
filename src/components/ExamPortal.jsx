@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
 import { MathTex, MathText } from './MathTex';
 import { gradeExamSubmission } from '../utils/gradingEngine';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
-  ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw
+  ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw,
+  ShieldAlert, ShieldCheck, AlertOctagon
 } from 'lucide-react';
 
 export default function ExamPortal({ onExamSubmitted }) {
@@ -21,6 +22,12 @@ export default function ExamPortal({ onExamSubmitted }) {
   const [submittedReceipt, setSubmittedReceipt] = useState(null);
 
   const activeExam = EXAMS.find((e) => e.id === selectedExamId) || EXAMS[0];
+
+  // Ref to always access latest answers inside async event listeners
+  const answersRef = useRef(answers);
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
 
   // Collect all questions for this exam
   const examQuestions = activeExam.sections.flatMap((sec) =>
@@ -40,7 +47,7 @@ export default function ExamPortal({ onExamSubmitted }) {
         setTimeLeftSeconds((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            handleAutoSubmit();
+            handleAutoSubmit('Time limit reached.');
             return 0;
           }
           return prev - 1;
@@ -49,6 +56,37 @@ export default function ExamPortal({ onExamSubmitted }) {
     }
     return () => clearInterval(timer);
   }, [isExamActive, timeLeftSeconds, submittedReceipt]);
+
+  // Anti-cheat Proctoring: Tab switch / Window focus loss auto-submit
+  useEffect(() => {
+    if (!isExamActive || submittedReceipt) return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handleProctorViolation('Tab switch / background tab navigation detected.');
+      }
+    };
+
+    const handleWindowBlur = () => {
+      handleProctorViolation('Window focus lost / application minimized or switched.');
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+    };
+  }, [isExamActive, submittedReceipt]);
+
+  const handleProctorViolation = (reason) => {
+    handleFinalSubmit({
+      proctorViolation: true,
+      violationReason: reason,
+      feedback: `AUTO-SUBMITTED BY PROCTORING ENGINE: Anti-cheat security violation (${reason}). Answers locked at time of event.`
+    });
+  };
 
   const handleStartExam = () => {
     if (!studentName.trim()) {
@@ -74,21 +112,26 @@ export default function ExamPortal({ onExamSubmitted }) {
     }));
   };
 
-  const handleFinalSubmit = () => {
-    const { autoScore, scoresMap } = gradeExamSubmission(examQuestions, answers);
+  const handleFinalSubmit = (proctorOptions = {}) => {
+    const currentAnswers = answersRef.current || answers;
+    const { autoScore, scoresMap } = gradeExamSubmission(examQuestions, currentAnswers);
+
+    const isViolation = Boolean(proctorOptions.proctorViolation);
     const submission = {
       id: `sub-${Date.now()}`,
       studentName: studentName || 'Student',
       studentId: studentId || 'STU-2026',
       examId: activeExam.id,
       submittedAt: new Date().toISOString(),
-      status: 'Pending',
-      answers,
+      status: isViolation ? 'Flagged' : 'Pending',
+      proctorViolation: isViolation,
+      violationReason: proctorOptions.violationReason || null,
+      answers: currentAnswers,
       scores: scoresMap,
       totalScore: autoScore,
       maxScore: activeExam.totalPoints,
       percentage: Math.round((autoScore / activeExam.totalPoints) * 100),
-      feedback: 'Preliminary automated score recorded. Tutor manual review pending for free-response derivations.'
+      feedback: proctorOptions.feedback || 'Automated objective score recorded. Awaiting tutor review.'
     };
 
     // Save to LocalStorage
@@ -109,8 +152,10 @@ export default function ExamPortal({ onExamSubmitted }) {
     }
   };
 
-  const handleAutoSubmit = () => {
-    handleFinalSubmit();
+  const handleAutoSubmit = (reason) => {
+    handleFinalSubmit({
+      feedback: `Auto-submitted: ${reason}`
+    });
   };
 
   const formatTime = (secs) => {
@@ -197,11 +242,14 @@ export default function ExamPortal({ onExamSubmitted }) {
               </div>
             </div>
 
-            <div className="p-3.5 rounded bg-[#09090b] border border-[#27272a] text-xs text-zinc-400 space-y-1 font-mono">
-              <div className="text-zinc-300 font-semibold mb-1">Examination Instructions:</div>
+            <div className="p-3.5 rounded bg-[#09090b] border border-[#27272a] text-xs text-zinc-400 space-y-1.5 font-mono">
+              <div className="text-zinc-300 font-semibold mb-1 flex items-center space-x-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                <span>Examination Instructions & Proctoring Policy:</span>
+              </div>
               <div>• Assessment timer runs continuously once launched.</div>
-              <div>• Work is saved automatically in session storage.</div>
-              <div>• Multiple choice and numeric inputs are validated automatically upon final submission.</div>
+              <div>• <span className="text-amber-400 font-semibold">Active Anti-Cheat Enabled:</span> Switching browser tabs, minimizing the window, or losing window focus will instantly auto-submit your exam with a proctoring violation flag.</div>
+              <div>• Deterministic Multiple Choice and Numeric inputs are validated automatically upon final submission.</div>
             </div>
 
             <button
@@ -466,14 +514,37 @@ export default function ExamPortal({ onExamSubmitted }) {
       {/* 3. Submission Complete Receipt */}
       {submittedReceipt && (
         <div className="max-w-xl mx-auto p-6 rounded-lg bg-[#121215] border border-[#27272a] shadow-xl text-center space-y-5">
-          <div className="w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-800 text-emerald-400 flex items-center justify-center mx-auto">
-            <Check className="w-6 h-6" />
-          </div>
+          {submittedReceipt.proctorViolation ? (
+            <div className="w-12 h-12 rounded-full bg-rose-950/50 border border-rose-800 text-rose-400 flex items-center justify-center mx-auto">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-800 text-emerald-400 flex items-center justify-center mx-auto">
+              <Check className="w-6 h-6" />
+            </div>
+          )}
 
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-zinc-100">Examination Submitted</h2>
+            <h2 className="text-lg font-semibold text-zinc-100">
+              {submittedReceipt.proctorViolation ? 'Exam Auto-Submitted (Proctor Violation)' : 'Examination Submitted'}
+            </h2>
             <p className="text-xs text-zinc-400 font-mono">Reference: {submittedReceipt.id}</p>
           </div>
+
+          {submittedReceipt.proctorViolation && (
+            <div className="p-3.5 rounded-md bg-rose-950/30 border border-rose-800/60 text-left font-mono text-xs text-rose-300 space-y-1">
+              <div className="font-semibold flex items-center space-x-1.5 text-rose-200">
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
+                <span>Security Flag Recorded</span>
+              </div>
+              <div className="text-[11px] text-rose-300/90 leading-relaxed">
+                {submittedReceipt.violationReason || 'Window focus lost or browser tab switched during active examination.'}
+              </div>
+              <div className="text-[10px] text-rose-400/80 pt-1">
+                This event has been logged with timestamp in the Tutor Gradebook.
+              </div>
+            </div>
+          )}
 
           <div className="p-4 rounded bg-[#09090b] border border-[#27272a] grid grid-cols-2 gap-3 text-left font-mono text-xs">
             <div>
@@ -494,14 +565,16 @@ export default function ExamPortal({ onExamSubmitted }) {
             </div>
             <div>
               <div className="text-zinc-500 text-[11px]">Status</div>
-              <span className="text-amber-400">
-                Pending Tutor Review
+              <span className={submittedReceipt.proctorViolation ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>
+                {submittedReceipt.status}
               </span>
             </div>
           </div>
 
           <p className="text-xs text-zinc-400">
-            Objective questions have been scored. Free-response problems are ready in the Tutor Gradebook.
+            {submittedReceipt.proctorViolation
+              ? 'Answers at the moment of the security violation have been captured and preserved.'
+              : 'Deterministic questions have been scored automatically and recorded to the gradebook.'}
           </p>
 
           <button
