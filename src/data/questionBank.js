@@ -1,5 +1,7 @@
 export const QUESTION_BANK = [
-  // ================= MATHEMATICS =================
+  // =========================================================================
+  // ============================ MATHEMATICS ================================
+  // =========================================================================
   {
     id: 'm1-01',
     subject: 'math',
@@ -7,7 +9,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Natural Domain of a Rational Radical Function',
-    prompt: 'What is the natural domain of the function f(x) = \\frac{\\sqrt{4 - x^2}}{x - 1}?',
+    prompt: 'What is the natural domain of the function f(x) = \\frac{\\sqrt{4 - x^2}}{x - 1} in the real numbers \\mathbb{R}?',
     mathPrompt: true,
     options: [
       '[-2, 2]',
@@ -16,7 +18,7 @@ export const QUESTION_BANK = [
       '(-2, 1) \\cup (1, 2)'
     ],
     correctAnswer: 1,
-    explanation: 'Condition 1: Inside radical must be non-negative: 4 - x^2 >= 0 => x^2 <= 4 => -2 <= x <= 2. Condition 2: Denominator cannot be zero: x - 1 != 0 => x != 1. Combining both gives [-2, 1) U (1, 2].'
+    explanation: 'Condition 1: Inside radical must be non-negative: 4 - x^2 >= 0 => x^2 <= 4 => -2 <= x <= 2. Condition 2: Denominator cannot be zero: x - 1 != 0 => x != 1. Combining both constraints with interval notation gives [-2, 1) U (1, 2].'
   },
   {
     id: 'm1-02',
@@ -25,7 +27,7 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Algebraic Limit with Conjugate Rationalization',
-    prompt: 'Evaluate the limit: \\lim_{x \\to 0} \\frac{\\sqrt{9 + x} - 3}{x}. Enter the exact decimal value.',
+    prompt: 'Evaluate the limit: \\lim_{x \\to 0} \\frac{\\sqrt{9 + x} - 3}{x}. Enter the exact decimal value to 3 decimal places.',
     mathPrompt: true,
     correctAnswer: 0.167,
     tolerance: 0.005,
@@ -49,8 +51,90 @@ export const QUESTION_BANK = [
     ],
     modelAnswer: 'For continuity at x = 2, we require lim_{x->2^-} f(x) = f(2) = lim_{x->2^+} f(x) = 5.\n\nLeft-hand limit: lim_{x->2^-} (ax + 3) = 2a + 3 = 5 => 2a = 2 => a = 1.\nRight-hand limit: lim_{x->2^+} (2x^2 + b) = 2(4) + b = 8 + b = 5 => b = -3.\n\nTherefore, a = 1 and b = -3.'
   },
+  {
+    id: 'm1-04',
+    subject: 'math',
+    session: 2,
+    difficulty: 'Intermediate',
+    type: 'multiple-choice',
+    title: 'Special Trigonometric Limit Evaluation',
+    prompt: 'Evaluate the limit: \\lim_{x \\to 0} \\frac{\\sin(5x)}{\\tan(2x)}.',
+    mathPrompt: true,
+    options: [
+      '0',
+      '1',
+      '\\frac{5}{2}',
+      '\\frac{2}{5}'
+    ],
+    correctAnswer: 2,
+    explanation: 'Rewrite \\tan(2x) = \\frac{\\sin(2x)}{\\cos(2x)}. The expression becomes \\frac{\\sin(5x)}{\\sin(2x)} \\cdot \\cos(2x) = \\frac{\\frac{\\sin(5x)}{5x} \\cdot 5x}{\\frac{\\sin(2x)}{2x} \\cdot 2x} \\cdot \\cos(2x). As x -> 0, \\frac{\\sin(5x)}{5x} -> 1, \\frac{\\sin(2x)}{2x} -> 1, and \\cos(0) = 1. Hence the limit is \\frac{5}{2} = 2.5.'
+  },
+  {
+    id: 'm1-05',
+    subject: 'math',
+    session: 3,
+    difficulty: 'Foundational',
+    type: 'multiple-choice',
+    title: 'Derivative of a Quotient with Chain Rule',
+    prompt: 'Find the derivative \\frac{d}{dx} \\left[ \\frac{e^{3x}}{x^2 + 1} \\right] at x = 0.',
+    mathPrompt: true,
+    options: [
+      '3',
+      '0',
+      '1',
+      '-3'
+    ],
+    correctAnswer: 0,
+    explanation: 'Using Quotient Rule: \\frac{u\'v - uv\'}{v^2}. Here u = e^{3x}, u\' = 3e^{3x}, v = x^2+1, v\' = 2x. At x = 0: u(0) = 1, u\'(0) = 3, v(0) = 1, v\'(0) = 0. Thus, f\'(0) = \\frac{3(1) - 1(0)}{1^2} = 3.'
+  },
+  {
+    id: 'm1-06',
+    subject: 'math',
+    session: 4,
+    difficulty: 'Exam-style',
+    type: 'numeric',
+    title: 'Box Construction Volume Optimization',
+    prompt: 'A rectangular sheet of cardboard measures 12 cm by 12 cm. Identical squares of side length x cm are cut from each of the 4 corners, and the flaps are folded up to form an open-top box. Calculate the value of x (in cm) that maximizes the enclosed box volume.',
+    correctAnswer: 2.0,
+    tolerance: 0.05,
+    unit: 'cm',
+    solution: 'Box dimensions: length = (12 - 2x), width = (12 - 2x), height = x. Volume V(x) = x(12 - 2x)^2 = x(144 - 48x + 4x^2) = 4x^3 - 48x^2 + 144x.\nTake derivative: V\'(x) = 12x^2 - 96x + 144 = 12(x^2 - 8x + 12) = 12(x - 2)(x - 6).\nFeasible domain for x is (0, 6). Critical point in domain is x = 2 cm. V\'\'(2) = 24(2) - 96 = -48 < 0 (confirms local maximum). Maximum volume is V(2) = 2(8)^2 = 128 cm^3.'
+  },
 
-  // ================= PHYSICS =================
+  // =========================================================================
+  // ============================= PHYSICS ===================================
+  // =========================================================================
+  {
+    id: 'p1-01',
+    subject: 'physics',
+    session: 1,
+    difficulty: 'Foundational',
+    type: 'multiple-choice',
+    title: '2D Projectile Maximum Height & Range',
+    prompt: 'A projectile is launched from ground level with initial speed u = 20.0 \\text{ m/s} at an angle \\theta = 30.0^\\circ above the horizontal over flat terrain (take g = 9.80 \\text{ m/s}^2). What is the maximum height H reached by the projectile?',
+    mathPrompt: true,
+    options: [
+      '5.10 m',
+      '10.20 m',
+      '15.30 m',
+      '20.40 m'
+    ],
+    correctAnswer: 0,
+    explanation: 'Vertical component u_y = u * sin(30) = 20.0 * 0.5 = 10.0 m/s. At peak height, v_y = 0. Using v_y^2 = u_y^2 - 2gH => 0 = 10.0^2 - 2(9.80)H => H = 100 / 19.6 = 5.102 m.'
+  },
+  {
+    id: 'p1-02',
+    subject: 'physics',
+    session: 1,
+    difficulty: 'Intermediate',
+    type: 'numeric',
+    title: 'Total Flight Time of an Elevated Projectile',
+    prompt: 'A stone is launched horizontally with velocity v_x = 15.0 \\text{ m/s} from the top of a cliff of height h = 44.1 \\text{ m}. Calculate the total time of flight (in seconds) before it strikes the flat ground below (take g = 9.80 \\text{ m/s}^2).',
+    correctAnswer: 3.0,
+    tolerance: 0.05,
+    unit: 's',
+    solution: 'Vertical motion has initial vertical velocity u_y = 0. Using s_y = u_y t + 0.5 g t^2 => 44.1 = 0 + 0.5(9.80)t^2 => 4.90 t^2 = 44.1 => t^2 = 9.0 => t = 3.00 s.'
+  },
   {
     id: 'p2-01',
     subject: 'physics',
@@ -58,7 +142,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Series Resistor Power Dissipation',
-    prompt: 'Two resistors R1 = 4 \\Omega and R2 = 8 \\Omega are connected in series to an ideal 24 V DC supply. What is the power dissipated in R2?',
+    prompt: 'Two resistors R1 = 4 \\Omega and R2 = 8 \\Omega are connected in series to an ideal 24 V DC supply. What is the electrical power dissipated in R2?',
     mathPrompt: true,
     options: [
       '16 W',
@@ -75,7 +159,7 @@ export const QUESTION_BANK = [
     session: 2,
     difficulty: 'Intermediate',
     type: 'numeric',
-    title: 'Loaded Battery Terminal Voltage',
+    title: 'Loaded Battery Terminal Voltage with Internal Resistance',
     prompt: 'A real DC battery has an electromotive force (EMF) of 12.0 V and an internal resistance of 0.50 \\Omega. When connected across a 5.50 \\Omega load resistor, calculate the terminal voltage in Volts.',
     correctAnswer: 11.0,
     tolerance: 0.1,
@@ -99,8 +183,44 @@ export const QUESTION_BANK = [
     ],
     modelAnswer: '(a) Circuit current I = V_in / (R1 + R2). Voltage across R2 is V_out = I * R2 = V_in * [R2 / (R1 + R2)].\n\n(b) V_out = 30 * (200 / 300) = 20.0 V.\n\n(c) When loaded by 200 \\Omega in parallel with R2, R_parallel = (200 * 200) / (200 + 200) = 100 \\Omega.\nNew total resistance = 100 + 100 = 200 \\Omega.\nLoaded V_out = 30 * (100 / 200) = 15.0 V (demonstrates the loading effect of non-ideal voltmeters).'
   },
+  {
+    id: 'p3-01',
+    subject: 'physics',
+    session: 3,
+    difficulty: 'Foundational',
+    type: 'multiple-choice',
+    title: 'Work-Energy Theorem with Incline Friction',
+    prompt: 'A 2.0 kg block slides 5.0 m down a frictionless ramp inclined at 30 degrees to the horizontal. What is the work done by the gravitational force on the block (take g = 9.8 m/s^2)?',
+    options: [
+      '49.0 J',
+      '98.0 J',
+      '24.5 J',
+      '84.9 J'
+    ],
+    correctAnswer: 0,
+    explanation: 'Vertical height dropped h = d * sin(30) = 5.0 * 0.5 = 2.5 m. Work done by gravity W_g = m * g * h = 2.0 * 9.8 * 2.5 = 49.0 J.'
+  },
 
-  // ================= COMPUTER SCIENCE =================
+  // =========================================================================
+  // ======================== COMPUTER SCIENCE ===============================
+  // =========================================================================
+  {
+    id: 'cs1-01',
+    subject: 'cs',
+    session: 1,
+    difficulty: 'Foundational',
+    type: 'multiple-choice',
+    title: 'Two’s Complement Range and Negation',
+    prompt: 'What is the 8-bit two’s complement binary representation of decimal -45?',
+    options: [
+      '11010011',
+      '11010010',
+      '00101101',
+      '10101101'
+    ],
+    correctAnswer: 0,
+    explanation: 'Step 1: +45 in 8-bit binary is 00101101. Step 2: Invert all bits (1s complement) => 11010010. Step 3: Add 1 => 11010011.'
+  },
   {
     id: 'cs2-01',
     subject: 'cs',
@@ -148,5 +268,22 @@ export const QUESTION_BANK = [
       { criterion: 'Pack into 32-bit word 1 10000010 10110100000000000000000 => 0xC15A0000', marks: 3 }
     ],
     modelAnswer: '(a) Integer 13 in binary is 1101_2. Fractional 0.625 = (0.5 + 0.125) = 2^-1 + 2^-3 = 0.101_2. Total: 1101.101_2.\n\n(b) Normalize: 1101.101_2 = 1.101101_2 * 2^3. True exponent E = 3.\n\n(c) Fields:\n- Sign bit (S): 1 (since number is negative)\n- Biased Exponent (E): 3 + 127 = 130 = 10000010_2\n- Mantissa (M): Drop leading 1, pad to 23 bits: 10110100000000000000000_2\n\n(d) Packed bits:\n1100 0001 0101 1010 0000 0000 0000 0000\nGroup into nibbles: C 1 5 A 0 0 0 0 => 0xC15A0000.'
+  },
+  {
+    id: 'cs3-01',
+    subject: 'cs',
+    session: 3,
+    difficulty: 'Intermediate',
+    type: 'multiple-choice',
+    title: 'Recurrence Relation & Master Theorem',
+    prompt: 'What is the tight asymptotic time complexity of a recursive algorithm with recurrence T(n) = 2T(n/2) + O(n)?',
+    options: [
+      'O(n)',
+      'O(n \\log n)',
+      'O(n^2)',
+      'O(\\log n)'
+    ],
+    correctAnswer: 1,
+    explanation: 'By Master Theorem: a = 2, b = 2, f(n) = O(n). Here \\log_b(a) = \\log_2(2) = 1. Since f(n) = \\Theta(n^{\\log_b a}) = \\Theta(n^1), this is Case 2 of Master Theorem. Hence T(n) = \\Theta(n \\log n).'
   }
 ];
