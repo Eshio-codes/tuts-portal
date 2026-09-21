@@ -66,7 +66,7 @@ Pure mathematical and physical calculation sandboxes backed by testable utilitie
 | **Mathematics Engine** | KaTeX 0.16 |
 | **Test Runner** | Vitest 5.0 (Unit and regression test suites) |
 | **Icons** | Lucide React |
-| **CI / CD** | GitHub Actions (Node.js 18.x, 20.x, 22.x matrix) |
+| **CI / CD** | GitHub Actions (Node.js 20.x, 22.x LTS matrix) |
 
 ---
 
@@ -103,7 +103,7 @@ npm run test:watch
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18.x or higher
+- Node.js 20.x or higher (Active LTS)
 - npm 9.x or higher
 
 ### Local Development
