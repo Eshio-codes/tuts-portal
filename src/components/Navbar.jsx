@@ -1,9 +1,10 @@
 import React from 'react';
-import { BookOpen, Presentation, HelpCircle, FileCheck, Award, Cpu, ShieldCheck, UserCheck } from 'lucide-react';
+import { BookOpen, Presentation, HelpCircle, FileCheck, Award, Cpu, ShieldCheck, UserCheck, FolderDown } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, userRole, setUserRole }) {
   const navItems = [
     { id: 'lessons', label: 'Curriculum', icon: BookOpen },
+    { id: 'materials', label: 'Course Materials', icon: FolderDown },
     { id: 'slides', label: 'Slide Decks', icon: Presentation },
     { id: 'practice', label: 'Problem Bank', icon: HelpCircle },
     { id: 'exams', label: 'Examinations', icon: FileCheck },

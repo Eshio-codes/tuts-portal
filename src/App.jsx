@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import LessonView from './components/LessonView';
+import MaterialsHub from './components/MaterialsHub';
 import SlidePresenter from './components/SlidePresenter';
 import QuestionBankView from './components/QuestionBankView';
 import ExamPortal from './components/ExamPortal';
@@ -26,6 +27,7 @@ export default function App() {
       {/* Main View Router */}
       <main className="flex-1">
         {activeTab === 'lessons' && <LessonView />}
+        {activeTab === 'materials' && <MaterialsHub onNavigate={setActiveTab} />}
         {activeTab === 'slides' && <SlidePresenter />}
         {activeTab === 'practice' && <QuestionBankView />}
         {activeTab === 'exams' && <ExamPortal userRole={userRole} />}
@@ -44,6 +46,7 @@ export default function App() {
 
           <div className="flex items-center space-x-5 text-zinc-400 text-[11px]">
             <button onClick={() => setActiveTab('lessons')} className="hover:text-zinc-200 transition-colors">Curriculum</button>
+            <button onClick={() => setActiveTab('materials')} className="hover:text-zinc-200 transition-colors">Materials</button>
             <button onClick={() => setActiveTab('slides')} className="hover:text-zinc-200 transition-colors">Slides</button>
             <button onClick={() => setActiveTab('practice')} className="hover:text-zinc-200 transition-colors">Problems</button>
             <button onClick={() => setActiveTab('exams')} className="hover:text-zinc-200 transition-colors">Examinations</button>

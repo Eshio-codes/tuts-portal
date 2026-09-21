@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { CURRICULUM, SUBJECTS } from '../data/curriculumData';
+import { COURSE_MATERIALS } from '../data/materialsData';
 import { MathTex, MathText } from './MathTex';
 import {
   BookOpen, Clock, CheckCircle2, AlertCircle, Maximize2, X,
-  ChevronRight, ChevronLeft, Zap, Calculator, Cpu, Printer, Search, ArrowRight
+  ChevronRight, ChevronLeft, Zap, Calculator, Cpu, Printer, Search, ArrowRight,
+  Download, FileText, ExternalLink, Eye
 } from 'lucide-react';
 
 const ICONS = {
@@ -281,6 +283,76 @@ export default function LessonView() {
               </div>
             </div>
           )}
+
+          {/* Course Handouts & Downloadable Materials */}
+          {(() => {
+            const subjectMaterials = COURSE_MATERIALS.filter(
+              (m) => m.subject === selectedSubject || m.subject === 'general'
+            );
+            if (subjectMaterials.length === 0) return null;
+
+            return (
+              <div className="p-5 rounded-lg bg-[#121215] border border-[#27272a] space-y-4 print:hidden">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-zinc-400" />
+                    <span className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-200">
+                      Official Handouts & Course Downloads
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    {subjectMaterials.length} Documents Available
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {subjectMaterials.map((mat) => (
+                    <div
+                      key={mat.id}
+                      className="p-3 rounded-lg bg-[#09090b] border border-[#27272a] hover:border-zinc-600 transition-all flex flex-col justify-between space-y-2.5"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 font-semibold border border-zinc-700">
+                            {mat.fileType}
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-500">{mat.fileSize}</span>
+                        </div>
+                        <h4 className="text-xs font-semibold text-zinc-200 leading-snug">
+                          {mat.title}
+                        </h4>
+                        <p className="text-[11px] text-zinc-400 mt-1 line-clamp-2">
+                          {mat.description}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center space-x-2 pt-2 border-t border-[#27272a]/60">
+                        <a
+                          href={mat.downloadUrl}
+                          download={mat.fileName}
+                          className="flex-1 px-2.5 py-1 rounded bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-mono font-semibold flex items-center justify-center space-x-1.5 transition-all"
+                        >
+                          <Download className="w-3 h-3" />
+                          <span>Download</span>
+                        </a>
+                        {mat.fileType === 'PDF' && (
+                          <a
+                            href={mat.downloadUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 rounded bg-[#18181c] hover:bg-zinc-800 text-zinc-300 border border-[#27272a] text-xs font-mono flex items-center space-x-1"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            <span>View</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Bottom Pagination & Navigation */}
           <div className="flex items-center justify-between pt-4 border-t border-[#27272a] print:hidden">
