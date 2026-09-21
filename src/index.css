@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 overflow-x-hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  code, pre, kbd {
+    font-family: 'Fira Code', monospace;
+  }
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #25334d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* KaTeX custom sizing in cards */
+.katex-display {
+  margin: 0.75em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Slide transitions */
+.slide-fade-enter {
+  opacity: 0;
+  transform: scale(0.98);
+}
+.slide-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 250ms, transform 250ms;
+}
