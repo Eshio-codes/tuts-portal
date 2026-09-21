@@ -337,7 +337,7 @@ export const QUESTION_BANK = [
     correctAnswer: 3.0,
     tolerance: 0.05,
     unit: 'm/s',
-    solution: 'By conservation of linear momentum: m1*u1 + m2*u2 = (m1 + m2)*v_f => (3.0)(4.0) + (1.0)(0) = (3.0 + 1.0)*v_f => 12.0 = 4.0 * v_f => v_f = 3.0 m/s.'
+    solution: 'By conservation of linear momentum: $$m_1 u_1 + m_2 u_2 = (m_1 + m_2) v_f$$\n$$(3.0)(4.0) + (1.0)(0) = (3.0 + 1.0) v_f \\implies 12.0 = 4.0 v_f \\implies v_f = 3.0\\text{ m/s}$$'
   },
   {
     id: 'p4-02',
@@ -346,7 +346,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Impulse and Force-Time Integral',
-    prompt: 'A constant horizontal force of 50 N acts on a 5.0 kg stationary object for 0.4 seconds. What is the final momentum of the object?',
+    prompt: 'A constant horizontal force of $50\\text{ N}$ acts on a $5.0\\text{ kg}$ stationary object for $0.4\\text{ seconds}$. What is the final momentum of the object?',
     options: [
       '20 N·s (kg·m/s)',
       '10 N·s (kg·m/s)',
@@ -354,7 +354,7 @@ export const QUESTION_BANK = [
       '100 N·s (kg·m/s)'
     ],
     correctAnswer: 0,
-    explanation: 'Impulse J = F * \\Delta t = \\Delta p. Since initial momentum is 0, final momentum p_f = 50 N * 0.4 s = 20 N·s.'
+    explanation: 'Impulse $J = F \\cdot \\Delta t = \\Delta p$. Since initial momentum is $0$, final momentum $p_f = (50\\text{ N})(0.4\\text{ s}) = 20\\text{ N}\\cdot\\text{s}$.'
   },
   {
     id: 'p5-01',
@@ -363,11 +363,11 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Torque on a Wrench',
-    prompt: 'A mechanic applies a 150 N force perpendicular to the end of a 0.25 m wrench. Calculate the resulting torque in N*m.',
+    prompt: 'A mechanic applies a $150\\text{ N}$ force perpendicular to the end of a $0.25\\text{ m}$ wrench. Calculate the resulting torque in $\\text{N}\\cdot\\text{m}$.',
     correctAnswer: 37.5,
     tolerance: 0.1,
-    unit: 'N*m',
-    solution: '\\tau = r * F * \\sin(90^\\circ) = (0.25 \\text{ m}) * (150 \\text{ N}) * (1.0) = 37.5 \\text{ N}\\cdot\\text{m}.'
+    unit: 'N·m',
+    solution: '$$\\tau = r F \\sin(90^\\circ) = (0.25\\text{ m})(150\\text{ N})(1.0) = 37.5\\text{ N}\\cdot\\text{m}$$'
   },
   {
     id: 'p5-02',
@@ -376,7 +376,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Rotational Kinetic Energy Formula',
-    prompt: 'What is the rotational kinetic energy of a solid cylinder of mass M, radius R, and moment of inertia I = \\frac{1}{2} M R^2 spinning at angular velocity \\omega?',
+    prompt: 'What is the rotational kinetic energy of a solid cylinder of mass $M$, radius $R$, and moment of inertia $I = \\frac{1}{2} M R^2$ spinning at angular velocity $\\omega$?',
     mathPrompt: true,
     options: [
       'K = \\frac{1}{4} M R^2 \\omega^2',
@@ -385,7 +385,7 @@ export const QUESTION_BANK = [
       'K = \\frac{1}{2} I^2 \\omega'
     ],
     correctAnswer: 0,
-    explanation: 'Rotational kinetic energy is K_{rot} = \\frac{1}{2} I \\omega^2. Substituting I = \\frac{1}{2} M R^2 yields K_{rot} = \\frac{1}{2} \\left(\\frac{1}{2} M R^2\\right) \\omega^2 = \\frac{1}{4} M R^2 \\omega^2.'
+    explanation: 'Rotational kinetic energy is $K_{\\text{rot}} = \\frac{1}{2} I \\omega^2$. Substituting $I = \\frac{1}{2} M R^2$ yields:\n$$K_{\\text{rot}} = \\frac{1}{2} \\left(\\frac{1}{2} M R^2\\right) \\omega^2 = \\frac{1}{4} M R^2 \\omega^2$$'
   },
   {
     id: 'p6-01',
@@ -394,11 +394,11 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Capacitor Energy Storage',
-    prompt: 'A 100 \\mu\\text{F} capacitor is charged to a potential difference of 20 V. Calculate the stored electrical energy in millijoules (mJ).',
+    prompt: 'A $100\\ \\mu\\text{F}$ capacitor is charged to a potential difference of $20\\text{ V}$. Calculate the stored electrical energy in millijoules (mJ).',
     correctAnswer: 20.0,
     tolerance: 0.1,
     unit: 'mJ',
-    solution: 'U = 0.5 * C * V^2 = 0.5 * (100 * 10^-6 F) * (20 V)^2 = 0.5 * 10^-4 * 400 = 0.020 J = 20.0 mJ.'
+    solution: '$$U = \\frac{1}{2} C V^2 = \\frac{1}{2} (100 \\times 10^{-6}\\text{ F})(20\\text{ V})^2 = \\frac{1}{2} (10^{-4})(400) = 0.020\\text{ J} = 20.0\\text{ mJ}$$'
   },
   {
     id: 'p6-02',
@@ -407,11 +407,11 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Series RLC Circuit Resonant Frequency',
-    prompt: 'Calculate the resonant angular frequency \\omega_0 (in rad/s) for a series RLC circuit with L = 20 \\text{ mH} and C = 5.0 \\mu\\text{F}.',
+    prompt: 'Calculate the resonant angular frequency $\\omega_0$ (in rad/s) for a series RLC circuit with $L = 20\\text{ mH}$ and $C = 5.0\\ \\mu\\text{F}$.',
     correctAnswer: 3162.3,
     tolerance: 10.0,
     unit: 'rad/s',
-    solution: '\\omega_0 = \\frac{1}{\\sqrt{LC}} = \\frac{1}{\\sqrt{(20 \\times 10^{-3})(5.0 \\times 10^{-6})}} = \\frac{1}{\\sqrt{10^{-7}}} = \\frac{1}{3.1623 \\times 10^{-4}} \\approx 3162.3 \\text{ rad/s}.'
+    solution: '$$\\omega_0 = \\frac{1}{\\sqrt{LC}} = \\frac{1}{\\sqrt{(20 \\times 10^{-3})(5.0 \\times 10^{-6})}} = \\frac{1}{\\sqrt{10^{-7}}} = \\frac{1}{3.1623 \\times 10^{-4}} \\approx 3162.3\\text{ rad/s}$$'
   },
 
   // =========================================================================
@@ -424,7 +424,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Two’s Complement Range and Negation',
-    prompt: 'What is the 8-bit two’s complement binary representation of decimal -45?',
+    prompt: 'What is the 8-bit two’s complement binary representation of decimal $-45$?',
     options: [
       '11010011',
       '11010010',
@@ -432,7 +432,7 @@ export const QUESTION_BANK = [
       '10101101'
     ],
     correctAnswer: 0,
-    explanation: 'Step 1: +45 in 8-bit binary is 00101101. Step 2: Invert all bits (1s complement) => 11010010. Step 3: Add 1 => 11010011.'
+    explanation: 'Step 1: $+45$ in 8-bit binary is $00101101_2$.\nStep 2: Invert all bits (1\'s complement) $\\implies 11010010_2$.\nStep 3: Add $1 \\implies 11010011_2$.'
   },
   {
     id: 'cs1-02',
@@ -458,7 +458,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'IEEE 754 Exponent Bias Calculation',
-    prompt: 'In IEEE 754 single-precision (32-bit) floating-point format, what 8-bit binary pattern represents the actual exponent E = -3?',
+    prompt: 'In IEEE 754 single-precision (32-bit) floating-point format, what 8-bit binary pattern represents the actual exponent $E = -3$?',
     options: [
       '01111100 (124 decimal)',
       '01111011 (123 decimal)',
@@ -466,7 +466,7 @@ export const QUESTION_BANK = [
       '11111101 (253 decimal)'
     ],
     correctAnswer: 0,
-    explanation: 'In 32-bit single-precision float, exponent bias is +127. Stored Exponent = E_actual + 127 = -3 + 127 = 124. 124 in binary is 01111100.'
+    explanation: 'In 32-bit single-precision float, exponent bias is $+127$. Stored Exponent $E_{\\text{stored}} = E_{\\text{actual}} + 127 = -3 + 127 = 124$. Decimal $124$ in binary is $01111100_2$.'
   },
   {
     id: 'cs2-02',
@@ -475,11 +475,11 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Bitwise Logic Masking Result',
-    prompt: 'Given uint8 integer x = 0x5A (binary 01011010), compute the decimal value of: (x ^ 0x0F) & 0xF0',
+    prompt: 'Given uint8 integer $x = \\text{0x5A}$ (binary $01011010_2$), compute the decimal value of: $(x \\oplus \\text{0x0F}) \\land \\text{0xF0}$',
     correctAnswer: 80,
     tolerance: 0,
     unit: '',
-    solution: 'Step 1: 0x5A = 0101 1010.\nStep 2: 0x0F = 0000 1111.\nx ^ 0x0F = 0101 0101 (0x55).\nStep 3: 0x55 & 0xF0 (1111 0000) = 0101 0000 (0x50).\n0x50 in decimal = 5 * 16 = 80.'
+    solution: 'Step 1: $\\text{0x5A} = 0101\\ 1010_2$.\nStep 2: $\\text{0x0F} = 0000\\ 1111_2$.\n$$x \\oplus \\text{0x0F} = 0101\\ 0101_2\\ (\\text{0x55})$$\nStep 3: $\\text{0x55} \\land \\text{0xF0} (1111\\ 0000_2) = 0101\\ 0000_2\\ (\\text{0x50})$.\n$$\\text{0x50} = 5 \\times 16 = 80$$'
   },
   {
     id: 'cs2-03',
@@ -488,16 +488,16 @@ export const QUESTION_BANK = [
     difficulty: 'Exam-style',
     type: 'free-response',
     title: 'Manual IEEE 754 Floating-Point Encoding',
-    prompt: 'Encode the decimal number -13.625 into 32-bit IEEE 754 single-precision floating-point representation. Show: (a) Binary conversion, (b) Normalized scientific form, (c) Sign bit, biased exponent, and mantissa bit fields, (d) Final 8-digit hexadecimal representation.',
+    prompt: 'Encode decimal $-13.625$ into 32-bit IEEE 754 single-precision floating-point representation. Show: (a) Binary conversion, (b) Normalized scientific form, (c) Sign bit, biased exponent, and mantissa bit fields, (d) Final 8-digit hexadecimal representation.',
     mathPrompt: true,
     points: 10,
     rubric: [
-      { criterion: 'Convert integer 13 = 1101_2 and fractional 0.625 = 0.101_2 => 1101.101_2', marks: 2 },
-      { criterion: 'Normalize to 1.101101_2 * 2^3 (Exponent = 3)', marks: 2 },
-      { criterion: 'Compute Sign=1, Biased Exponent = 3 + 127 = 130 = 10000010_2, Mantissa = 10110100000000000000000_2', marks: 3 },
-      { criterion: 'Pack into 32-bit word 1 10000010 10110100000000000000000 => 0xC15A0000', marks: 3 }
+      { criterion: 'Convert integer $13 = 1101_2$ and fractional $0.625 = 0.101_2 \\implies 1101.101_2$', marks: 2 },
+      { criterion: 'Normalize to $1.101101_2 \\times 2^3$ (True Exponent $E = 3$)', marks: 2 },
+      { criterion: 'Compute $S=1$, Biased Exponent $= 3 + 127 = 130 = 10000010_2$, Mantissa $= 10110100000000000000000_2$', marks: 3 },
+      { criterion: 'Pack into 32-bit word $1\\ 10000010\\ 10110100000000000000000_2 \\implies \\text{0xC15A0000}$', marks: 3 }
     ],
-    modelAnswer: '(a) Integer 13 in binary is 1101_2. Fractional 0.625 = (0.5 + 0.125) = 2^-1 + 2^-3 = 0.101_2. Total: 1101.101_2.\n\n(b) Normalize: 1101.101_2 = 1.101101_2 * 2^3. True exponent E = 3.\n\n(c) Fields:\n- Sign bit (S): 1 (since number is negative)\n- Biased Exponent (E): 3 + 127 = 130 = 10000010_2\n- Mantissa (M): Drop leading 1, pad to 23 bits: 10110100000000000000000_2\n\n(d) Packed bits:\n1100 0001 0101 1010 0000 0000 0000 0000\nGroup into nibbles: C 1 5 A 0 0 0 0 => 0xC15A0000.'
+    modelAnswer: '(a) Integer $13$ in binary is $1101_2$. Fractional $0.625 = 2^{-1} + 2^{-3} = 0.101_2$. Total: $1101.101_2$.\n\n(b) Normalize: $1101.101_2 = 1.101101_2 \\times 2^3$. True exponent $E = 3$.\n\n(c) Fields:\n- Sign bit ($S$): $1$ (negative)\n- Biased Exponent ($E$): $3 + 127 = 130 = 10000010_2$\n- Mantissa ($M$): Drop leading 1, pad to 23 bits: $10110100000000000000000_2$\n\n(d) Packed bits:\n$$1100\\ 0001\\ 0101\\ 1010\\ 0000\\ 0000\\ 0000\\ 0000_2$$\nGroup into nibbles: $\\text{C}\\ \\text{1}\\ \\text{5}\\ \\text{A}\\ \\text{0}\\ \\text{0}\\ \\text{0}\\ \\text{0} \\implies \\text{0xC15A0000}$.'
   },
   {
     id: 'cs3-01',
@@ -506,15 +506,15 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'multiple-choice',
     title: 'Recurrence Relation & Master Theorem',
-    prompt: 'What is the tight asymptotic time complexity of a recursive algorithm with recurrence T(n) = 2T(n/2) + O(n)?',
+    prompt: 'What is the tight asymptotic time complexity of a recursive algorithm with recurrence $T(n) = 2T(n/2) + \\mathcal{O}(n)$?',
     options: [
-      'O(n)',
-      'O(n \\log n)',
-      'O(n^2)',
-      'O(\\log n)'
+      '\\mathcal{O}(n)',
+      '\\mathcal{O}(n \\log n)',
+      '\\mathcal{O}(n^2)',
+      '\\mathcal{O}(\\log n)'
     ],
     correctAnswer: 1,
-    explanation: 'By Master Theorem: a = 2, b = 2, f(n) = O(n). Here \\log_b(a) = \\log_2(2) = 1. Since f(n) = \\Theta(n^{\\log_b a}) = \\Theta(n^1), this is Case 2 of Master Theorem. Hence T(n) = \\Theta(n \\log n).'
+    explanation: 'By Master Theorem: $a = 2$, $b = 2$, $f(n) = \\mathcal{O}(n)$. Here $\\log_b(a) = \\log_2(2) = 1$. Since $f(n) = \\Theta(n^{\\log_b a}) = \\Theta(n^1)$, this is Case 2 of Master Theorem. Hence $T(n) = \\Theta(n \\log n)$.'
   },
   {
     id: 'cs3-02',
@@ -523,15 +523,15 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Nested Loop Complexity',
-    prompt: 'What is the worst-case asymptotic time complexity of two nested loops where the outer loop executes n times and the inner loop executes i times (for i = 1 to n)?',
+    prompt: 'What is the worst-case asymptotic time complexity of two nested loops where the outer loop executes $n$ times and the inner loop executes $i$ times (for $i = 1$ to $n$)?',
     options: [
-      'O(n^2)',
-      'O(n \\log n)',
-      'O(n)',
-      'O(2^n)'
+      '\\mathcal{O}(n^2)',
+      '\\mathcal{O}(n \\log n)',
+      '\\mathcal{O}(n)',
+      '\\mathcal{O}(2^n)'
     ],
     correctAnswer: 0,
-    explanation: 'Total iterations = \\sum_{i=1}^n i = \\frac{n(n+1)}{2} = \\frac{1}{2}n^2 + \\frac{1}{2}n = O(n^2).'
+    explanation: 'Total iterations = $$\\sum_{i=1}^n i = \\frac{n(n+1)}{2} = \\frac{1}{2}n^2 + \\frac{1}{2}n = \\mathcal{O}(n^2)$$'
   },
   {
     id: 'cs4-01',
@@ -559,13 +559,13 @@ export const QUESTION_BANK = [
     title: 'Linked List Head Insertion Time Complexity',
     prompt: 'What is the time complexity to insert a new node at the head of a singly linked list with a known head pointer?',
     options: [
-      'O(1)',
-      'O(n)',
-      'O(\\log n)',
-      'O(n^2)'
+      '\\mathcal{O}(1)',
+      '\\mathcal{O}(n)',
+      '\\mathcal{O}(\\log n)',
+      '\\mathcal{O}(n^2)'
     ],
     correctAnswer: 0,
-    explanation: 'Inserting at head only requires allocating the new node, setting newNode.next = head, and updating head = newNode. This runs in constant O(1) time independent of list size.'
+    explanation: 'Inserting at head only requires allocating the new node, setting $\\text{newNode.next} = \\text{head}$, and updating $\\text{head} = \\text{newNode}$. This runs in constant $\\mathcal{O}(1)$ time.'
   },
   {
     id: 'cs5-01',
@@ -574,11 +574,11 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'numeric',
     title: 'Binary Search Maximum Comparisons',
-    prompt: 'What is the maximum number of comparisons required to search for an item in a sorted array of 1024 elements using binary search?',
+    prompt: 'What is the maximum number of comparisons required to search for an item in a sorted array of $1024$ elements using binary search?',
     correctAnswer: 11,
     tolerance: 0,
     unit: 'comparisons',
-    solution: 'Maximum comparisons in binary search = floor(log2(n)) + 1 = floor(log2(1024)) + 1 = 10 + 1 = 11 comparisons.'
+    solution: 'Maximum comparisons in binary search: $$\\lfloor \\log_2(n) \\rfloor + 1 = \\lfloor \\log_2(1024) \\rfloor + 1 = 10 + 1 = 11\\text{ comparisons}$$'
   },
   {
     id: 'cs5-02',
@@ -587,15 +587,15 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Merge Sort Divide-and-Conquer Phase',
-    prompt: 'What is the time complexity of the merge step that combines two sorted subarrays of length n/2 into a single sorted array of length n?',
+    prompt: 'What is the time complexity of the merge step that combines two sorted subarrays of length $n/2$ into a single sorted array of length $n$?',
     options: [
-      'O(n)',
-      'O(n \\log n)',
-      'O(1)',
-      'O(n^2)'
+      '\\mathcal{O}(n)',
+      '\\mathcal{O}(n \\log n)',
+      '\\mathcal{O}(1)',
+      '\\mathcal{O}(n^2)'
     ],
     correctAnswer: 0,
-    explanation: 'Merging two sorted lists of total length n scans each element at most once using two pointers, requiring linear O(n) operations.'
+    explanation: 'Merging two sorted lists of total length $n$ scans each element at most once using two pointers, requiring linear $\\mathcal{O}(n)$ operations.'
   },
   {
     id: 'cs6-01',
@@ -604,7 +604,7 @@ export const QUESTION_BANK = [
     difficulty: 'Intermediate',
     type: 'multiple-choice',
     title: 'Boolean De Morgan Equivalence',
-    prompt: 'According to De Morgan\'s Laws, what is the equivalent simplified expression for \\overline{A \\cdot \\overline{B}}?',
+    prompt: 'According to De Morgan\'s Laws, what is the equivalent simplified expression for $\\overline{A \\cdot \\overline{B}}$?',
     options: [
       '\\overline{A} + B',
       '\\overline{A} \\cdot B',
@@ -612,7 +612,7 @@ export const QUESTION_BANK = [
       '\\overline{A} + \\overline{B}'
     ],
     correctAnswer: 0,
-    explanation: 'Using De Morgan\'s Law \\overline{X \\cdot Y} = \\overline{X} + \\overline{Y}. Here X = A and Y = \\overline{B}. Thus \\overline{A \\cdot \\overline{B}} = \\overline{A} + \\overline{\\overline{B}} = \\overline{A} + B.'
+    explanation: 'Using De Morgan\'s Law $\\overline{X \\cdot Y} = \\overline{X} + \\overline{Y}$. Here $X = A$ and $Y = \\overline{B}$. Thus:\n$$\\overline{A \\cdot \\overline{B}} = \\overline{A} + \\overline{\\overline{B}} = \\overline{A} + B$$'
   },
   {
     id: 'cs6-02',
@@ -621,7 +621,7 @@ export const QUESTION_BANK = [
     difficulty: 'Foundational',
     type: 'multiple-choice',
     title: 'Digital Logic Half Adder Outputs',
-    prompt: 'A 1-bit Half Adder circuit receives binary inputs A = 1 and B = 1. What are the resulting Sum (S) and Carry (C) outputs?',
+    prompt: 'A 1-bit Half Adder circuit receives binary inputs $A = 1$ and $B = 1$. What are the resulting $\\text{Sum } (S)$ and $\\text{Carry } (C)$ outputs?',
     options: [
       'Sum = 0, Carry = 1',
       'Sum = 1, Carry = 0',
@@ -629,6 +629,6 @@ export const QUESTION_BANK = [
       'Sum = 0, Carry = 0'
     ],
     correctAnswer: 0,
-    explanation: 'For a half adder: Sum S = A XOR B = 1 XOR 1 = 0. Carry C = A AND B = 1 AND 1 = 1. The binary sum is 10_2 (decimal 2).'
+    explanation: 'For a half adder: $\\text{Sum } S = A \\oplus B = 1 \\oplus 1 = 0$. $\\text{Carry } C = A \\cdot B = 1 \\cdot 1 = 1$. The binary sum is $10_2$ (decimal $2$).'
   }
 ];
