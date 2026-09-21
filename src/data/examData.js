@@ -6,13 +6,13 @@ export const EXAMS = [
     timeLimitMinutes: 60,
     totalPoints: 50,
     description: 'Timed assessment covering Physics DC Circuits & Dividers, CS IEEE 754 & Bitwise Logic, and Math Limit Laws.',
-    instructions: 'Answer all 6 questions. For numerical questions, provide answers with appropriate precision. For free-response questions, show all intermediate steps and derivations.',
+    instructions: 'Answer all questions. For numerical questions, provide answers with appropriate precision. For free-response questions, show all intermediate steps and derivations.',
     sections: [
       {
         id: 'sec-math',
         title: 'Section A: Mathematics (Limits & Continuity)',
         points: 16,
-        questions: ['m1-01', 'm1-02', 'm1-03']
+        questions: ['m1-01', 'm1-02', 'm2-01']
       },
       {
         id: 'sec-physics',
@@ -29,19 +29,53 @@ export const EXAMS = [
     ]
   },
   {
+    id: 'exam-calculus-mastery',
+    title: 'Mathematics Unit Mastery: Differential Calculus & Optimization',
+    subject: 'math',
+    timeLimitMinutes: 45,
+    totalPoints: 35,
+    description: 'Comprehensive evaluation of domain restrictions, conjugate limits, first principles, quotient rules, and real-world box volume optimization.',
+    instructions: 'All calculations must be accompanied by appropriate algebraic steps.',
+    sections: [
+      {
+        id: 'sec-math-mastery',
+        title: 'Differential Calculus & Optimization Suite',
+        points: 35,
+        questions: ['m1-01', 'm1-02', 'm2-02', 'm3-01', 'm3-02', 'm4-01']
+      }
+    ]
+  },
+  {
     id: 'exam-physics-unit1',
     title: 'Physics Unit 1 Mastery Exam: Kinematics & Circuits',
     subject: 'physics',
     timeLimitMinutes: 45,
     totalPoints: 30,
-    description: 'Focused test on 1D/2D Kinematics and DC Circuit analysis with Kirchhoff’s Laws.',
+    description: 'Focused test on 1D/2D Kinematics, Projectile Independence, and DC Circuit analysis with Kirchhoff’s Laws.',
     instructions: 'Calculators permitted. State units in all numeric answers.',
     sections: [
       {
         id: 'sec-phys-all',
-        title: 'Physics Circuit Mastery',
+        title: 'Physics Kinematics & Circuit Mastery',
         points: 30,
-        questions: ['p2-01', 'p2-02', 'p2-03']
+        questions: ['p1-01', 'p1-02', 'p2-01', 'p2-02', 'p2-03']
+      }
+    ]
+  },
+  {
+    id: 'exam-physics-mechanics-energy',
+    title: 'Physics Unit 2: Energy, Momentum & Rotations',
+    subject: 'physics',
+    timeLimitMinutes: 45,
+    totalPoints: 25,
+    description: 'Work-Energy Theorem, Momentum Inelastic Collisions, Torque calculations, and Capacitor storage.',
+    instructions: 'Show scalar energy and vector momentum balances clearly.',
+    sections: [
+      {
+        id: 'sec-phys-mechanics',
+        title: 'Energy & Dynamics Problems',
+        points: 25,
+        questions: ['p3-01', 'p4-01', 'p5-01', 'p6-01']
       }
     ]
   },
@@ -58,7 +92,24 @@ export const EXAMS = [
         id: 'sec-cs-all',
         title: 'Computer Systems & Number Formats',
         points: 30,
-        questions: ['cs2-01', 'cs2-02', 'cs2-03']
+        questions: ['cs1-01', 'cs2-01', 'cs2-02', 'cs2-03']
+      }
+    ]
+  },
+  {
+    id: 'exam-cs-algorithms-logic',
+    title: 'CS Unit 2: Algorithms, Data Structures & Logic Gates',
+    subject: 'cs',
+    timeLimitMinutes: 45,
+    totalPoints: 25,
+    description: 'Big-O recurrence analysis, Stack/Queue memory disciplines, Binary search limits, and De Morgan Boolean gates.',
+    instructions: 'State complexity in tight Theta or Big-O bounds.',
+    sections: [
+      {
+        id: 'sec-cs-algo',
+        title: 'Algorithmic Complexity & Logic',
+        points: 25,
+        questions: ['cs3-01', 'cs4-01', 'cs5-01', 'cs6-01']
       }
     ]
   }
@@ -75,7 +126,7 @@ export const INITIAL_SUBMISSIONS = [
     answers: {
       'm1-01': 1,
       'm1-02': '0.167',
-      'm1-03': 'Continuity at x=2 requires 2a+3 = 5 => a=1. Also 2(2)^2 + b = 8+b = 5 => b = -3.',
+      'm2-01': 'Continuity at x=2 requires 2a+3 = 5 => a=1. Also 2(2)^2 + b = 8+b = 5 => b = -3.',
       'p2-01': 1,
       'p2-02': '11.0',
       'p2-03': 'Part A: I = Vin / (R1+R2), Vout = I*R2 = 30 * (200/300) = 20V. Part C: 200 || 200 = 100 ohms. Vout_loaded = 30 * (100 / 200) = 15V.',
@@ -86,7 +137,7 @@ export const INITIAL_SUBMISSIONS = [
     scores: {
       'm1-01': 4,
       'm1-02': 4,
-      'm1-03': 8,
+      'm2-01': 8,
       'p2-01': 3,
       'p2-02': 4,
       'p2-03': 10,
@@ -98,5 +149,50 @@ export const INITIAL_SUBMISSIONS = [
     maxScore: 50,
     percentage: 100,
     feedback: 'Outstanding performance across all three subjects! Full marks on IEEE 754 manual encoding and circuit loading derivation.'
+  },
+  {
+    id: 'sub-002',
+    studentName: 'Elena Rostova',
+    studentId: 'STU-2026-002',
+    examId: 'exam-stem-s2',
+    submittedAt: '2026-09-21T09:15:00Z',
+    status: 'Pending',
+    answers: {
+      'm1-01': 1,
+      'm1-02': '0.166',
+      'm2-01': 'At x=2: 2a+3=5 => a=1. 2(2)^2 + b = 8+b=5 => b=-3.',
+      'p2-01': 1,
+      'p2-02': '11.0',
+      'p2-03': 'Vout = 30 * (200/300) = 20V. When loaded, R_parallel = 100 ohms, so Vout = 15V.',
+      'cs2-01': 0,
+      'cs2-02': '80',
+      'cs2-03': '13.625 is 1101.101. Normalizes to 1.101101 * 2^3. S=1, E=130, M=10110100... Hex is 0xC15A0000.'
+    },
+    scores: {},
+    totalScore: 0,
+    maxScore: 50,
+    percentage: 0,
+    feedback: ''
+  },
+  {
+    id: 'sub-003',
+    studentName: 'Marcus Vance',
+    studentId: 'STU-2026-003',
+    examId: 'exam-calculus-mastery',
+    submittedAt: '2026-09-21T10:45:00Z',
+    status: 'Pending',
+    answers: {
+      'm1-01': 1,
+      'm1-02': '0.167',
+      'm2-02': 2,
+      'm3-01': 0,
+      'm3-02': '8.0',
+      'm4-01': '2.0'
+    },
+    scores: {},
+    totalScore: 0,
+    maxScore: 35,
+    percentage: 0,
+    feedback: ''
   }
 ];

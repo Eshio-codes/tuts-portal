@@ -1,4 +1,7 @@
 export const SLIDE_DECKS = {
+  // =========================================================================
+  // ============================ MATHEMATICS ================================
+  // =========================================================================
   'math-1': {
     subject: 'math',
     session: 1,
@@ -67,10 +70,54 @@ export const SLIDE_DECKS = {
       }
     ]
   },
+  'math-2': {
+    subject: 'math',
+    session: 2,
+    title: 'Math Session 2: Limit Laws, Continuity & Squeeze Theorem',
+    subtitle: 'Foundation Sprint • Calculus I',
+    slides: [
+      {
+        id: 1,
+        title: 'Rigorous Continuity Criteria',
+        subtitle: 'The 3-Part Continuity Test at a Point',
+        points: [
+          '1. f(c) must be defined (point exists on curve).',
+          '2. lim_{x -> c} f(x) must exist (left limit = right limit).',
+          '3. lim_{x -> c} f(x) must equal f(c) (no removable jump or hole).'
+        ],
+        formula: '\\lim_{x \\to c} f(x) = f(c)',
+        notes: 'Contrast removable discontinuities (holes) with essential discontinuities (vertical asymptotes).'
+      },
+      {
+        id: 2,
+        title: 'The Squeeze (Sandwich) Theorem',
+        subtitle: 'Trapping Oscillating Functions Between Known Bounds',
+        points: [
+          'If g(x) <= f(x) <= h(x) near c, and lim g(x) = lim h(x) = L, then lim f(x) = L.',
+          'Essential for oscillating functions like x^2 * sin(1/x) at x = 0.',
+          'Trigonometric foundation for lim (sin x)/x = 1.'
+        ],
+        formula: '-x^2 \\le x^2 \\sin(1/x) \\le x^2 \\implies \\lim_{x \\to 0} x^2 \\sin(1/x) = 0',
+        notes: 'Draw two squeezing parabolas trapping the rapid wave inside.'
+      },
+      {
+        id: 3,
+        title: 'Special Trigonometric Limits',
+        subtitle: 'Standard Limit Identities in Radians',
+        points: [
+          'Limit of (sin x)/x as x -> 0 equals 1 (angles must be in radians).',
+          'Limit of (1 - cos x)/x as x -> 0 equals 0.',
+          'Generalization: lim (sin(ax))/(bx) = a/b.'
+        ],
+        formula: '\\lim_{x \\to 0} \\frac{\\sin(kx)}{x} = k, \\quad \\lim_{x \\to 0} \\frac{1 - \\cos(x)}{x^2} = \\frac{1}{2}',
+        notes: 'Have student compute lim (tan 3x)/(sin 2x) = 3/2 using algebra.'
+      }
+    ]
+  },
   'math-3': {
     subject: 'math',
     session: 3,
-    title: 'Math Session 3: Derivative from First Principles & Product/Quotient/Chain Rules',
+    title: 'Math Session 3: Derivative from First Principles & Differentiation Rules',
     subtitle: 'Foundation Sprint • Differential Calculus',
     slides: [
       {
@@ -123,6 +170,143 @@ export const SLIDE_DECKS = {
       }
     ]
   },
+  'math-4': {
+    subject: 'math',
+    session: 4,
+    title: 'Math Session 4: Applications of Derivatives — Curve Sketching & Optimization',
+    subtitle: 'Foundation Sprint • Differential Calculus',
+    slides: [
+      {
+        id: 1,
+        title: 'Critical Points & Fermat’s Theorem',
+        subtitle: 'Locating Potential Extrema',
+        points: [
+          'A critical point c satisfies f\'(c) = 0 or f\'(c) is undefined.',
+          'Fermat’s Theorem: Local extrema can ONLY occur at critical points.',
+          'Caution: f\'(c) = 0 is a necessary condition, but not sufficient (e.g., y = x^3 at x=0).'
+        ],
+        formula: "f'(c) = 0 \\lor f'(c) \\notin \\mathbb{R}",
+        notes: 'Explain horizontal inflection points where tangent is zero but function continues to rise.'
+      },
+      {
+        id: 2,
+        title: 'First & Second Derivative Tests',
+        subtitle: 'Classifying Local Maxima, Minima, and Concavity',
+        points: [
+          'First Derivative Test: f\' flips (+) to (-) -> Local Max; (-) to (+) -> Local Min.',
+          'Second Derivative Test: f\'\'(c) > 0 -> Concave Up (Min); f\'\'(c) < 0 -> Concave Down (Max).',
+          'Inflection point occurs where concavity changes sign (f\'\'(x) flips sign).'
+        ],
+        formula: "f''(c) > 0 \\implies \\text{Local Min (Valley)}, \\quad f''(c) < 0 \\implies \\text{Local Max (Peak)}",
+        notes: 'Show memory trick: f\'\' > 0 smiles (holds water, min), f\'\' < 0 frowns (spills water, max).'
+      },
+      {
+        id: 3,
+        title: 'Real-World Optimization Modeling',
+        subtitle: '4-Step Systematic Optimization Algorithm',
+        points: [
+          '1. Define variables and draw a clear geometric diagram.',
+          '2. Write primary objective function (e.g., Volume, Cost, Area).',
+          '3. Use constraint equations to eliminate extra variables into single variable f(x).',
+          '4. Find critical points in feasible domain and test endpoints.'
+        ],
+        formula: "V(x) = x(L - 2x)(W - 2x) \\implies V'(x) = 0",
+        notes: 'Always check physical domain boundaries (e.g., x > 0 and 2x < min(L, W)).'
+      }
+    ]
+  },
+  'math-5': {
+    subject: 'math',
+    session: 5,
+    title: 'Math Session 5: Integral Calculus & Fundamental Theorem (FTC)',
+    subtitle: 'Foundation Sprint • Integral Calculus',
+    slides: [
+      {
+        id: 1,
+        title: 'Accumulation & Riemann Sums',
+        subtitle: 'Approximating Area Under the Curve',
+        points: [
+          'Definite integral is defined as the infinite limit of Riemann rectangle sums.',
+          'Delta x = (b - a) / n is the width of each subinterval.',
+          'Definite integral computes net signed area (above x-axis is +, below is -).'
+        ],
+        formula: "\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty} \\sum_{i=1}^n f(x_i^*) \\Delta x",
+        notes: 'Contrast left, right, and midpoint Riemann sums.'
+      },
+      {
+        id: 2,
+        title: 'The Fundamental Theorem of Calculus (FTC)',
+        subtitle: 'Uniting Differentiation and Integration',
+        points: [
+          'FTC Part 1: Derivative of accumulation function restores integrand: d/dx [int_a^x f(t) dt] = f(x).',
+          'FTC Part 2: Definite integral equals difference in antiderivatives: int_a^b f(x) dx = F(b) - F(a).',
+          'Eliminates the need for evaluating cumbersome Riemann limits.'
+        ],
+        formula: "\\int_a^b f(x)\\,dx = F(b) - F(a) \\quad \\text{where } F'(x) = f(x)",
+        notes: 'Emphasize the constant of integration +C for indefinite integrals and why it cancels in definite integrals.'
+      },
+      {
+        id: 3,
+        title: 'Integration by Substitution (U-Sub)',
+        subtitle: 'Reversing the Chain Rule for Integrals',
+        points: [
+          'Identify an inner function u = g(x) whose derivative g\'(x) appears as a factor.',
+          'Compute du = g\'(x) dx and substitute all terms into u-space.',
+          'For definite integrals: ALWAYS transform the upper and lower integration bounds.'
+        ],
+        formula: "\\int_a^b f(g(x)) g'(x)\\,dx = \\int_{g(a)}^{g(b)} f(u)\\,du",
+        notes: 'Walk through integral of 2x * sqrt(1 + x^2) dx step by step.'
+      }
+    ]
+  },
+  'math-6': {
+    subject: 'math',
+    session: 6,
+    title: 'Math Session 6: Matrix Algebra, Determinants & Linear Systems',
+    subtitle: 'Foundation Sprint • Linear Algebra',
+    slides: [
+      {
+        id: 1,
+        title: 'Matrix Operations & Transformations',
+        subtitle: 'Linear Maps in Coordinate Spaces',
+        points: [
+          'Matrix multiplication is row-by-column dot products (non-commutative: AB != BA).',
+          'Identity matrix I acts as the multiplicative identity: AI = IA = A.',
+          'A matrix transforms basis vectors i-hat and j-hat into new column vectors.'
+        ],
+        formula: "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} ax + by \\\\ cx + dy \\end{pmatrix}",
+        notes: 'Show geometric interpretation of 2x2 matrix as stretching and rotating the grid.'
+      },
+      {
+        id: 2,
+        title: 'Determinants and Invertibility',
+        subtitle: 'Area Scaling Factor and Singularity',
+        points: [
+          'Determinant represents how area/volume scales under the linear transformation.',
+          'det(A) = ad - bc for 2x2 matrix.',
+          'If det(A) = 0, transformation collapses space into a line/point; matrix has NO inverse (Singular).'
+        ],
+        formula: "A^{-1} = \\frac{1}{ad - bc} \\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}, \\quad \\det(A) \\neq 0",
+        notes: 'Connect det(A) = 0 to systems of equations having 0 or infinite solutions.'
+      },
+      {
+        id: 3,
+        title: 'Solving Systems: AX = B and Gaussian Elimination',
+        subtitle: 'Systematic Elimination to Row-Echelon Form',
+        points: [
+          'System of linear equations can be compacted into matrix equation AX = B.',
+          'Solution: X = A^(-1) B (when A is non-singular).',
+          'Row operations: 1. Swap rows, 2. Scale row by non-zero constant, 3. Add row multiple to another row.'
+        ],
+        formula: "\\begin{pmatrix} 2 & 1 \\\\ 1 & 3 \\end{pmatrix} \\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 5 \\\\ 10 \\end{pmatrix} \\implies X = A^{-1} B",
+        notes: 'Perform Gaussian elimination on board to reach upper triangular form.'
+      }
+    ]
+  },
+
+  // =========================================================================
+  // ============================= PHYSICS ===================================
+  // =========================================================================
   'physics-1': {
     subject: 'physics',
     session: 1,
@@ -255,6 +439,142 @@ export const SLIDE_DECKS = {
       }
     ]
   },
+  'physics-4': {
+    subject: 'physics',
+    session: 4,
+    title: 'Physics Session 4: Linear Momentum, Impulse & Collisions',
+    subtitle: 'Foundation Sprint • Momentum Dynamics',
+    slides: [
+      {
+        id: 1,
+        title: 'Linear Momentum & Impulse-Momentum Theorem',
+        subtitle: 'The Impact Mechanics of Moving Masses',
+        points: [
+          'Linear momentum p = m * v is a vector with same direction as velocity.',
+          'Impulse J = Integral(F dt) represents the change in momentum (Delta p).',
+          'To reduce peak impact force, extend collision time dt (airbags, crumple zones).'
+        ],
+        formula: '\\vec{J} = \\int_{t_1}^{t_2} \\vec{F}\\,dt = \\Delta \\vec{p} = m \\vec{v}_f - m \\vec{v}_i',
+        notes: 'Highlight area under Force-Time curve as the total impulse delivered.'
+      },
+      {
+        id: 2,
+        title: 'Conservation of Linear Momentum',
+        subtitle: 'Internal vs External Forces in Closed Systems',
+        points: [
+          'If net external force is zero, total momentum of system is conserved in all directions.',
+          'Holds true for all collisions: elastic, inelastic, explosions, and recoils.',
+          'Vector conservation: momentum must balance independently on x and y axes.'
+        ],
+        formula: 'm_1 \\vec{u}_1 + m_2 \\vec{u}_2 = m_1 \\vec{v}_1 + m_2 \\vec{v}_2',
+        notes: 'Show rifle recoil calculation where initial system momentum is zero.'
+      },
+      {
+        id: 3,
+        title: 'Collision Classification & Restitution',
+        subtitle: 'Elastic vs Inelastic Collisions',
+        points: [
+          'Elastic Collision (e = 1): Kinetic energy AND momentum are conserved.',
+          'Inelastic Collision (0 < e < 1): Momentum conserved, kinetic energy lost to heat/sound.',
+          'Perfectly Inelastic Collision (e = 0): Objects stick together with common final velocity.'
+        ],
+        formula: 'e = \\frac{v_2 - v_1}{u_1 - u_2} \\quad [\\text{Coefficient of Restitution}]',
+        notes: 'Demonstrate ballistic pendulum calculation where energy is lost in collision but conserved in swing.'
+      }
+    ]
+  },
+  'physics-5': {
+    subject: 'physics',
+    session: 5,
+    title: 'Physics Session 5: Rotational Dynamics, Torque & Angular Momentum',
+    subtitle: 'Foundation Sprint • Rotational Mechanics',
+    slides: [
+      {
+        id: 1,
+        title: 'Torque & Rotational Equilibrium',
+        subtitle: 'Rotational Analogue of Force',
+        points: [
+          'Torque tau = r * F * sin(theta) measures rotational effectiveness of a force.',
+          'Lever arm (perpendicular distance) determines torque magnitude.',
+          'Static equilibrium requires BOTH: sum of forces = 0 AND sum of torques = 0.'
+        ],
+        formula: '\\vec{\\tau} = \\vec{r} \\times \\vec{F} = r F \\sin\\theta, \\quad \\sum \\vec{\\tau} = 0',
+        notes: 'Show why opening a door near hinges requires much larger force.'
+      },
+      {
+        id: 2,
+        title: 'Moment of Inertia & Newton’s 2nd Law for Rotation',
+        subtitle: 'Resistance to Angular Acceleration',
+        points: [
+          'Moment of inertia I = sum(m * r^2) depends on mass AND how mass is distributed from axis.',
+          'Rotational Newton 2nd Law: Net Torque = I * alpha (angular acceleration).',
+          'Parallel Axis Theorem: I = I_cm + M * d^2 allows shifting rotation axes.'
+        ],
+        formula: '\\tau_{\\text{net}} = I \\alpha, \\quad I_{\\text{cylinder}} = \\frac{1}{2} M R^2, \\quad I_{\\text{sphere}} = \\frac{2}{5} M R^2',
+        notes: 'Race a solid cylinder and a hollow ring down an incline: solid cylinder wins due to smaller I.'
+      },
+      {
+        id: 3,
+        title: 'Conservation of Angular Momentum',
+        subtitle: 'The Invariance of Rotational Spin',
+        points: [
+          'Angular momentum L = I * omega for rigid rotating bodies.',
+          'When external torque is zero, L remains strictly constant.',
+          'Figure skater effect: reducing moment of inertia I increases angular speed omega.'
+        ],
+        formula: 'L = I_1 \\omega_1 = I_2 \\omega_2 \\quad (\\text{when } \\tau_{\\text{ext}} = 0)',
+        notes: 'Demonstrate rotational kinetic energy E_rot = 1/2 I omega^2.'
+      }
+    ]
+  },
+  'physics-6': {
+    subject: 'physics',
+    session: 6,
+    title: 'Physics Session 6: Electrostatics, Coulomb’s Law & Capacitors',
+    subtitle: 'Foundation Sprint • Electromagnetism',
+    slides: [
+      {
+        id: 1,
+        title: 'Coulomb’s Law & Electric Fields',
+        subtitle: 'Fundamental Electrostatic Forces',
+        points: [
+          'Point charges exert electrostatic force proportional to product of charges over r^2.',
+          'Electric Field E = F / q represents force exerted per unit positive test charge.',
+          'Superposition Principle: Total electric field is vector sum of individual fields.'
+        ],
+        formula: 'F_e = \\frac{1}{4\\pi \\varepsilon_0} \\frac{|q_1 q_2|}{r^2}, \\quad \\vec{E} = \\frac{\\vec{F}_e}{q_0}',
+        notes: 'Draw electric field lines radiating away from positive charges into negative charges.'
+      },
+      {
+        id: 2,
+        title: 'Electric Potential & Energy Storage',
+        subtitle: 'Voltage as Potential Energy per Charge',
+        points: [
+          'Electric potential V is work done to bring unit charge from infinity: V = -int E dot dr.',
+          'Potential difference Delta V = E * d in uniform electric fields.',
+          'Electric field points in direction of steepest decrease in potential: E = -dV/dx.'
+        ],
+        formula: 'V = \\frac{1}{4\\pi\\varepsilon_0} \\frac{q}{r}, \\quad \\Delta U = q \\Delta V',
+        notes: 'Contrast vector electric field (N/C or V/m) with scalar electric potential (Volts = J/C).'
+      },
+      {
+        id: 3,
+        title: 'Capacitors and RC Transient Circuits',
+        subtitle: 'Storing Electrostatic Energy in Dielectrics',
+        points: [
+          'Capacitance C = Q / V depends on geometry and dielectric permittivity: C = epsilon * A / d.',
+          'Energy stored in capacitor: U = 1/2 C V^2.',
+          'RC circuit charging: Voltage rises asymptotically with time constant tau = R * C.'
+        ],
+        formula: 'C = \\frac{\\varepsilon_0 A}{d}, \\quad V(t) = V_0 \\left(1 - e^{-t / RC}\\right), \\quad \\tau = RC',
+        notes: 'Show that after 1 time constant (tau = RC), capacitor charges to 63.2% of supply voltage.'
+      }
+    ]
+  },
+
+  // =========================================================================
+  // ======================== COMPUTER SCIENCE ===============================
+  // =========================================================================
   'cs-1': {
     subject: 'cs',
     session: 1,
@@ -360,6 +680,102 @@ export const SLIDE_DECKS = {
         ],
         formula: 'T(n) = 2T(n/2) + O(n) \\implies \\Theta(n \\log n) \\quad [\\text{MergeSort}]',
         notes: 'Warn students about recursion depth limit and stack overflow.'
+      }
+    ]
+  },
+  'cs-4': {
+    subject: 'cs',
+    session: 4,
+    title: 'CS Session 4: Linear Data Structures & Memory Management',
+    subtitle: 'Foundation Sprint • Data Structures',
+    slides: [
+      {
+        id: 1,
+        title: 'Dynamic Arrays vs Linked Lists',
+        subtitle: 'Contiguous vs Pointer-Based Memory Allocation',
+        points: [
+          'Dynamic Array: O(1) random indexing, but O(n) worst-case insertion/deletion.',
+          'Linked List: O(1) head insertion/deletion, but O(n) sequential traversal.',
+          'Memory hierarchy: Arrays maximize CPU L1/L2 cache spatial locality.'
+        ],
+        formula: '\\text{Array Access: } O(1), \\quad \\text{Linked List Access: } O(n)',
+        notes: 'Explain why cache misses make linked lists slow in modern architectures despite O(1) insertions.'
+      },
+      {
+        id: 2,
+        title: 'Stacks (LIFO) and Queues (FIFO)',
+        subtitle: 'Abstract Data Types and Buffer Management',
+        points: [
+          'Stack: Last-In, First-Out. Push and Pop operations are strictly O(1). Used in call stack, undo buffers, and parser brackets.',
+          'Queue: First-In, First-Out. Enqueue and Dequeue are O(1). Used in task scheduling, BFS traversal, and printer queues.',
+          'Circular buffer implementation avoids O(n) shifting during array dequeues.'
+        ],
+        formula: '\\text{Stack: Push/Pop } O(1), \\quad \\text{Queue: Enqueue/Dequeue } O(1)',
+        notes: 'Demonstrate bracket matching validator using a stack.'
+      }
+    ]
+  },
+  'cs-5': {
+    subject: 'cs',
+    session: 5,
+    title: 'CS Session 5: Searching, Sorting & Divide-and-Conquer',
+    subtitle: 'Foundation Sprint • Algorithms',
+    slides: [
+      {
+        id: 1,
+        title: 'Binary Search Algorithm',
+        subtitle: 'Logarithmic Division of Search Space',
+        points: [
+          'Requires pre-sorted input array.',
+          'Divides search range in half each step: T(n) = T(n/2) + O(1) -> O(log n).',
+          'Safe midpoint formula avoids integer overflow: mid = low + (high - low) // 2.'
+        ],
+        formula: '\\text{Time Complexity: } O(\\log_2 n) \\implies 30 \\text{ steps for } 10^9 \\text{ elements}',
+        notes: 'Contrast 30 operations for binary search with 1 billion operations for linear search.'
+      },
+      {
+        id: 2,
+        title: 'MergeSort vs QuickSort',
+        subtitle: 'Divide-and-Conquer Sorting Paradigms',
+        points: [
+          'MergeSort: Divides in half, sorts recursively, merges in O(n). Guaranteed O(n log n), stable, but needs O(n) memory.',
+          'QuickSort: Partitions around pivot. In-place O(log n) space, very fast cache locality, average O(n log n), worst O(n^2).',
+          'Comparison sort lower bound is Omega(n log n) by decision tree theorem.'
+        ],
+        formula: 'T(n) = 2T(n/2) + O(n) \\implies \\Theta(n \\log n)',
+        notes: 'Demonstrate MergeSort recursion tree and partition algorithm for QuickSort.'
+      }
+    ]
+  },
+  'cs-6': {
+    subject: 'cs',
+    session: 6,
+    title: 'CS Session 6: Boolean Algebra, Logic Gates & Combinational Circuits',
+    subtitle: 'Foundation Sprint • Digital Logic',
+    slides: [
+      {
+        id: 1,
+        title: 'Boolean Algebra Postulates & De Morgan’s Laws',
+        subtitle: 'Simplifying Logical Equations',
+        points: [
+          'De Morgan 1: NOT(A AND B) = (NOT A) OR (NOT B).',
+          'De Morgan 2: NOT(A OR B) = (NOT A) AND (NOT B).',
+          'Absorption Law: A + A*B = A; A*(A + B) = A.'
+        ],
+        formula: '\\overline{A \\cdot B} = \\overline{A} + \\overline{B}, \\quad \\overline{A + B} = \\overline{A} \\cdot \\overline{B}',
+        notes: 'Work through algebraic reduction of a truth table on whiteboard.'
+      },
+      {
+        id: 2,
+        title: 'Universal Logic Gates & Circuit Synthesis',
+        subtitle: 'Building Complete Computers from NAND/NOR',
+        points: [
+          'NAND and NOR gates are functionally complete: any boolean logic can be built exclusively from NANDs.',
+          'Half Adder: XOR gate computes Sum, AND gate computes Carry.',
+          'Full Adder: Chains two half adders and an OR gate to process Carry-In.'
+        ],
+        formula: '\\text{Sum} = A \\oplus B \\oplus C_{\\text{in}}, \\quad C_{\\text{out}} = (A \\cdot B) + (C_{\\text{in}} \\cdot (A \\oplus B))',
+        notes: 'Show how cascading 32 full adders creates a 32-bit Ripple-Carry Adder.'
       }
     ]
   }

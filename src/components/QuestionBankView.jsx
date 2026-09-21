@@ -1,23 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QUESTION_BANK } from '../data/questionBank';
 import MathTex from './MathTex';
 import {
   HelpCircle, CheckCircle2, XCircle, ChevronDown,
-  ChevronUp, RotateCcw, Award, BookOpen, Check
+  ChevronUp, RotateCcw, Award, BookOpen, Check, Search, Filter,
+  Star, Copy, CheckCheck
 } from 'lucide-react';
 
 export default function QuestionBankView({ defaultSubject = 'all' }) {
   const [selectedSubject, setSelectedSubject] = useState(defaultSubject);
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+  const [selectedSession, setSelectedSession] = useState('all');
+  const [onlyBookmarked, setOnlyBookmarked] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [userAnswers, setUserAnswers] = useState({});
   const [submittedStates, setSubmittedStates] = useState({});
   const [revealedSolutions, setRevealedSolutions] = useState({});
+  const [bookmarkedIds, setBookmarkedIds] = useState([]);
+  const [copiedId, setCopiedId] = useState(null);
+
+  // Load bookmarks from LocalStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('tuts_bookmarked_questions');
+      if (saved) setBookmarkedIds(JSON.parse(saved));
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const toggleBookmark = (qId) => {
+    const updated = bookmarkedIds.includes(qId)
+      ? bookmarkedIds.filter(id => id !== qId)
+      : [...bookmarkedIds, qId];
+    setBookmarkedIds(updated);
+    try {
+      localStorage.setItem('tuts_bookmarked_questions', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleCopyPrompt = (q) => {
+    const text = `${q.title}\n\n${q.prompt}`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedId(q.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
 
   // Filter questions
   const filteredQuestions = QUESTION_BANK.filter((q) => {
     if (selectedSubject !== 'all' && q.subject !== selectedSubject) return false;
     if (selectedDifficulty !== 'all' && q.difficulty !== selectedDifficulty) return false;
+    if (selectedType !== 'all' && q.type !== selectedType) return false;
+    if (selectedSession !== 'all' && q.session !== parseInt(selectedSession, 10)) return false;
+    if (onlyBookmarked && !bookmarkedIds.includes(q.id)) return false;
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      const matchTitle = q.title.toLowerCase().includes(query);
+      const matchPrompt = q.prompt.toLowerCase().includes(query);
+      if (!matchTitle && !matchPrompt) return false;
+    }
     return true;
+  });
+
+  // Performance stats for filtered view
+  const totalInView = filteredQuestions.length;
+  const submittedInView = filteredQuestions.filter(q => submittedStates[q.id]);
+  const correctInView = submittedInView.filter(q => {
+    const answer = userAnswers[q.id];
+    if (q.type === 'multiple-choice') return answer === q.correctAnswer;
+    if (q.type === 'numeric') {
+      const num = parseFloat(answer);
+      return !isNaN(num) && Math.abs(num - q.correctAnswer) <= (q.tolerance || 0.01);
+    }
+    return false; // free response not auto-graded
   });
 
   const handleSelectOption = (qId, optionIdx) => {
@@ -47,6 +106,11 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
     setSubmittedStates(newSubmitted);
   };
 
+  const handleResetAll = () => {
+    setUserAnswers({});
+    setSubmittedStates({});
+  };
+
   const toggleSolution = (qId) => {
     setRevealedSolutions({
       ...revealedSolutions,
@@ -58,45 +122,144 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
       {/* Header & Filter Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#27272a]">
-        <div>
-          <h2 className="text-xl font-semibold text-zinc-100 tracking-tight">Problem Bank & Practice Sets</h2>
-          <p className="text-xs text-zinc-400 mt-0.5">Topic-specific questions with instant answer validation and step-by-step marking rubrics.</p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Subject Filter */}
-          <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a]">
-            {['all', 'math', 'physics', 'cs'].map((sub) => (
-              <button
-                key={sub}
-                onClick={() => setSelectedSubject(sub)}
-                className={`px-2.5 py-1 rounded text-xs font-mono capitalize transition-all ${
-                  selectedSubject === sub
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-              >
-                {sub === 'cs' ? 'CS' : sub}
-              </button>
-            ))}
+      <div className="flex flex-col space-y-4 pb-4 border-b border-[#27272a]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-zinc-100 tracking-tight">Problem Bank & Practice Sets</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">Topic-specific questions with instant answer validation and step-by-step marking rubrics.</p>
           </div>
 
-          {/* Difficulty Filter */}
-          <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a]">
-            {['all', 'Foundational', 'Intermediate', 'Exam-style'].map((diff) => (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setOnlyBookmarked(!onlyBookmarked)}
+              className={`px-2.5 py-1.5 rounded text-xs font-mono flex items-center space-x-1.5 transition-all border ${
+                onlyBookmarked
+                  ? 'bg-amber-950/40 text-amber-300 border-amber-800'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+              }`}
+              title="Show only bookmarked problems"
+            >
+              <Star className={`w-3 h-3 ${onlyBookmarked ? 'fill-amber-400 text-amber-400' : 'text-zinc-400'}`} />
+              <span>Bookmarks ({bookmarkedIds.length})</span>
+            </button>
+
+            {submittedInView.length > 0 && (
               <button
-                key={diff}
-                onClick={() => setSelectedDifficulty(diff)}
-                className={`px-2.5 py-1 rounded text-xs font-mono transition-all ${
-                  selectedDifficulty === diff
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
+                onClick={handleResetAll}
+                className="px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-mono flex items-center space-x-1.5 transition-all"
+                title="Reset answers in this view"
               >
-                {diff}
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset Practice Set</span>
               </button>
-            ))}
+            )}
+          </div>
+        </div>
+
+        {/* Filter bar & Search */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+          {/* Search box */}
+          <div className="relative flex-1 max-w-sm">
+            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search problem title or keywords..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 bg-[#121215] border border-[#27272a] rounded-lg text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Subject Filter */}
+            <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a]">
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'math', label: 'Math' },
+                { id: 'physics', label: 'Physics' },
+                { id: 'cs', label: 'CS' }
+              ].map((sub) => (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubject(sub.id)}
+                  className={`px-2.5 py-1 rounded text-xs font-mono transition-all ${
+                    selectedSubject === sub.id
+                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Difficulty Filter */}
+            <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a]">
+              {['all', 'Foundational', 'Intermediate', 'Exam-style'].map((diff) => (
+                <button
+                  key={diff}
+                  onClick={() => setSelectedDifficulty(diff)}
+                  className={`px-2.5 py-1 rounded text-xs font-mono transition-all ${
+                    selectedDifficulty === diff
+                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  {diff}
+                </button>
+              ))}
+            </div>
+
+            {/* Question Type Filter */}
+            <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a] hidden md:flex">
+              {[
+                { id: 'all', label: 'All Types' },
+                { id: 'multiple-choice', label: 'MCQ' },
+                { id: 'numeric', label: 'Numeric' },
+                { id: 'free-response', label: 'Derivation' }
+              ].map((tp) => (
+                <button
+                  key={tp.id}
+                  onClick={() => setSelectedType(tp.id)}
+                  className={`px-2 py-1 rounded text-xs font-mono transition-all ${
+                    selectedType === tp.id
+                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/60'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  {tp.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Live Score Tracker Ledger */}
+        <div className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-[#121215] border border-[#27272a] text-xs font-mono text-zinc-400">
+          <div className="flex items-center space-x-4">
+            <div>
+              <span className="text-zinc-500 mr-1.5">Total Problems:</span>
+              <span className="text-zinc-200 font-semibold">{totalInView}</span>
+            </div>
+            <div>
+              <span className="text-zinc-500 mr-1.5">Attempted:</span>
+              <span className="text-zinc-200 font-semibold">{submittedInView.length}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <div>
+              <span className="text-zinc-500 mr-1.5">Correct:</span>
+              <span className="text-emerald-400 font-semibold">{correctInView.length}</span>
+            </div>
+            {submittedInView.length > 0 && (
+              <div>
+                <span className="text-zinc-500 mr-1.5">Accuracy:</span>
+                <span className="text-zinc-100 font-semibold">
+                  {Math.round((correctInView.length / (submittedInView.filter(q => q.type !== 'free-response').length || 1)) * 100)}%
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -112,6 +275,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
             const isSubmitted = submittedStates[q.id];
             const answer = userAnswers[q.id];
             const showSol = revealedSolutions[q.id];
+            const isBookmarked = bookmarkedIds.includes(q.id);
 
             let isCorrect = false;
             if (isSubmitted) {
@@ -142,13 +306,37 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                     <span className="text-[11px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
                       {q.difficulty}
                     </span>
+                    <span className="text-zinc-600 font-mono hidden sm:inline">•</span>
+                    <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-zinc-900 border border-zinc-800 text-zinc-500 hidden sm:inline">
+                      {q.type === 'multiple-choice' ? 'Multiple Choice' : q.type === 'numeric' ? 'Numeric Entry' : 'Free Response'}
+                    </span>
                   </div>
 
-                  {q.points && (
-                    <span className="text-xs font-mono font-semibold text-zinc-400">
-                      [{q.points} Marks]
-                    </span>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleCopyPrompt(q)}
+                      className="p-1 rounded bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition-colors"
+                      title="Copy problem statement"
+                    >
+                      {copiedId === q.id ? <CheckCheck className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                    <button
+                      onClick={() => toggleBookmark(q.id)}
+                      className={`p-1 rounded border transition-colors ${
+                        isBookmarked
+                          ? 'bg-amber-950/50 text-amber-300 border-amber-700'
+                          : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200 border-zinc-800'
+                      }`}
+                      title={isBookmarked ? 'Remove bookmark' : 'Bookmark problem'}
+                    >
+                      <Star className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
+                    </button>
+                    {q.points && (
+                      <span className="text-xs font-mono font-semibold text-zinc-400">
+                        [{q.points} Marks]
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Prompt */}

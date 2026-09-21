@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { CURRICULUM, SUBJECTS } from '../data/curriculumData';
 import MathTex from './MathTex';
-import { BookOpen, Clock, CheckCircle2, AlertCircle, Maximize2, X, ChevronRight, Zap, Calculator, Cpu } from 'lucide-react';
+import {
+  BookOpen, Clock, CheckCircle2, AlertCircle, Maximize2, X,
+  ChevronRight, ChevronLeft, Zap, Calculator, Cpu, Printer, Search, ArrowRight
+} from 'lucide-react';
 
 const ICONS = {
   Calculator: Calculator,
@@ -9,20 +12,34 @@ const ICONS = {
   Cpu: Cpu
 };
 
-export default function LessonView({ onOpenSlide, onOpenPractice }) {
+export default function LessonView() {
   const [selectedSubject, setSelectedSubject] = useState('physics');
   const [selectedSessionIndex, setSelectedSessionIndex] = useState(1); // Session 2
+  const [searchQuery, setSearchQuery] = useState('');
   const [modalImage, setModalImage] = useState(null);
 
   const currentSubjectObj = SUBJECTS.find(s => s.id === selectedSubject) || SUBJECTS[0];
-  const sessions = CURRICULUM[selectedSubject] || [];
-  const currentSession = sessions[selectedSessionIndex] || sessions[0];
+  const allSessions = CURRICULUM[selectedSubject] || [];
+
+  const filteredSessions = allSessions.filter(s => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return s.title.toLowerCase().includes(q) ||
+      (s.topics && s.topics.some(t => t.toLowerCase().includes(q))) ||
+      (s.overview && s.overview.toLowerCase().includes(q));
+  });
+
+  const currentSession = allSessions[selectedSessionIndex] || allSessions[0];
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
       {/* Subject Header & Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#27272a] mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#27272a] mb-6 print:hidden">
         <div>
           <h1 className="text-xl font-semibold text-zinc-100 tracking-tight">Curriculum & Course Notes</h1>
           <p className="text-xs text-zinc-400 mt-0.5">Formal STEM lecture notes, mathematical derivations, and schematics.</p>
@@ -56,24 +73,37 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        {/* Left Sidebar: Session Table of Contents (3 cols) */}
-        <div className="lg:col-span-4 space-y-4">
+        {/* Left Sidebar: Session Table of Contents (3-4 cols) */}
+        <div className="lg:col-span-4 space-y-4 print:hidden">
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={`Search ${currentSubjectObj.name} topics...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 bg-[#121215] border border-[#27272a] rounded-lg text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
+            />
+          </div>
+
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
               {currentSubjectObj.name} Modules
             </span>
-            <span className="text-[11px] font-mono text-zinc-400">
-              {sessions.length} Units
+            <span className="text-[11px] font-mono text-zinc-500">
+              {filteredSessions.length} Units
             </span>
           </div>
 
-          <div className="space-y-1.5">
-            {sessions.map((sess, idx) => {
-              const isSelected = idx === selectedSessionIndex;
+          <div className="space-y-1.5 max-h-[580px] overflow-y-auto pr-1">
+            {filteredSessions.map((sess) => {
+              const actualIdx = allSessions.findIndex(s => s.session === sess.session);
+              const isSelected = actualIdx === selectedSessionIndex;
               return (
                 <button
                   key={sess.session}
-                  onClick={() => setSelectedSessionIndex(idx)}
+                  onClick={() => setSelectedSessionIndex(actualIdx)}
                   className={`w-full text-left p-3 rounded-lg border transition-all ${
                     isSelected
                       ? 'bg-[#18181c] border-zinc-600 text-zinc-100'
@@ -93,7 +123,7 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
                     </span>
                   </div>
                   <div className="font-medium text-xs text-zinc-200 line-clamp-1">{sess.title}</div>
-                  <div className="flex items-center text-[11px] text-zinc-400 mt-1 space-x-1.5">
+                  <div className="flex items-center text-[11px] text-zinc-500 mt-1 space-x-1.5">
                     <Clock className="w-3 h-3" />
                     <span>{sess.duration}</span>
                   </div>
@@ -104,8 +134,18 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
 
           {/* Quick Module Metadata Box */}
           <div className="p-3.5 rounded-lg bg-[#121215] border border-[#27272a] space-y-2">
-            <div className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-400">
-              Module Metadata
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-400">
+                Module Summary
+              </span>
+              <button
+                onClick={handlePrint}
+                className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-300 hover:text-zinc-100 flex items-center space-x-1"
+                title="Print or export current lecture handout as PDF"
+              >
+                <Printer className="w-2.5 h-2.5" />
+                <span>Print Notes</span>
+              </button>
             </div>
             <div className="text-xs text-zinc-400 space-y-1 font-mono">
               <div className="flex justify-between">
@@ -113,7 +153,7 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
                 <span className="text-zinc-200">{currentSubjectObj.name}</span>
               </div>
               <div className="flex justify-between">
-                <span>Scheduled Time:</span>
+                <span>Duration:</span>
                 <span className="text-zinc-200">{currentSession.duration}</span>
               </div>
               <div className="flex justify-between">
@@ -129,10 +169,13 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
 
           {/* Document Header Panel */}
           <div className="p-6 rounded-lg bg-[#121215] border border-[#27272a]">
-            <div className="flex items-center space-x-2 mb-2 font-mono text-xs text-zinc-400">
-              <span>{currentSubjectObj.name.toUpperCase()}</span>
-              <span>/</span>
-              <span>SESSION {currentSession.session}</span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2 font-mono text-xs text-zinc-400">
+                <span>{currentSubjectObj.name.toUpperCase()}</span>
+                <span>/</span>
+                <span>SESSION {currentSession.session}</span>
+              </div>
+              <span className="text-xs font-mono text-zinc-500">{currentSession.duration}</span>
             </div>
 
             <h1 className="text-2xl font-bold text-zinc-100 tracking-tight mb-2">
@@ -239,13 +282,46 @@ export default function LessonView({ onOpenSlide, onOpenPractice }) {
             </div>
           )}
 
+          {/* Bottom Pagination & Navigation */}
+          <div className="flex items-center justify-between pt-4 border-t border-[#27272a] print:hidden">
+            <button
+              onClick={() => setSelectedSessionIndex(Math.max(0, selectedSessionIndex - 1))}
+              disabled={selectedSessionIndex === 0}
+              className={`px-3 py-1.5 rounded-md text-xs font-mono flex items-center space-x-1.5 border transition-all ${
+                selectedSessionIndex === 0
+                  ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                  : 'bg-[#121215] border-[#27272a] text-zinc-300 hover:text-zinc-100 hover:border-zinc-600'
+              }`}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Previous Unit</span>
+            </button>
+
+            <span className="text-xs font-mono text-zinc-500">
+              Unit {selectedSessionIndex + 1} of {allSessions.length}
+            </span>
+
+            <button
+              onClick={() => setSelectedSessionIndex(Math.min(allSessions.length - 1, selectedSessionIndex + 1))}
+              disabled={selectedSessionIndex === allSessions.length - 1}
+              className={`px-3 py-1.5 rounded-md text-xs font-mono flex items-center space-x-1.5 border transition-all ${
+                selectedSessionIndex === allSessions.length - 1
+                  ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                  : 'bg-[#121215] border-[#27272a] text-zinc-300 hover:text-zinc-100 hover:border-zinc-600'
+              }`}
+            >
+              <span>Next Unit</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
 
       </div>
 
       {/* Diagram Zoom Lightbox Modal */}
       {modalImage && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setModalImage(null)}>
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 print:hidden" onClick={() => setModalImage(null)}>
           <div className="relative max-w-4xl w-full bg-[#121215] rounded-lg border border-zinc-700 overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-[#27272a]">
               <div>

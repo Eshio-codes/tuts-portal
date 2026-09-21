@@ -6,5 +6,17 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ]
+  ],
+  build: {
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-katex': ['katex'],
+          'vendor-icons': ['lucide-react']
+        }
+      }
+    }
+  }
 })

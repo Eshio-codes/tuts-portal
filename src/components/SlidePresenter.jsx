@@ -1,17 +1,41 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { SLIDE_DECKS } from '../data/slideDecks';
 import MathTex from './MathTex';
 import {
   ChevronLeft, ChevronRight, Maximize, Minimize,
-  LayoutGrid, FileText, CheckCircle2, X, RotateCcw
+  LayoutGrid, FileText, CheckCircle2, X, RotateCcw,
+  Play, Pause, Clock, Code2, BookOpen, Layers
 } from 'lucide-react';
 
 export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
   const [selectedDeckKey, setSelectedDeckKey] = useState(initialDeckId);
+  const [subjectFilter, setSubjectFilter] = useState('all');
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
+
+  // Presenter Timer State
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  useEffect(() => {
+    let interval = null;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setTimerSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning]);
+
+  const formatTimer = (sec) => {
+    const mins = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   const currentDeck = SLIDE_DECKS[selectedDeckKey] || SLIDE_DECKS['physics-2'];
   const slides = currentDeck.slides || [];
@@ -42,18 +66,28 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
       if (e.key === 'ArrowRight' || e.key === 'Space') {
         e.preventDefault();
         handleNext();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         handlePrev();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        setCurrentSlideIndex(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        setCurrentSlideIndex(slides.length - 1);
       } else if (e.key === 'n' || e.key === 'N') {
         setShowNotes((prev) => !prev);
       } else if (e.key === 'g' || e.key === 'G') {
         setShowGrid((prev) => !prev);
       } else if (e.key === 'f' || e.key === 'F') {
         handleToggleFullscreen();
+      } else if (e.key === 't' || e.key === 'T') {
+        setIsTimerRunning((prev) => !prev);
       } else if (e.key === 'Escape') {
         setShowGrid(false);
       }
@@ -61,22 +95,54 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev]);
+  }, [handleNext, handlePrev, slides.length]);
+
+  // Filtered decks list
+  const deckKeys = Object.keys(SLIDE_DECKS).filter((key) => {
+    if (subjectFilter === 'all') return true;
+    return SLIDE_DECKS[key].subject === subjectFilter;
+  });
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4">
 
-      {/* Top Deck Selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#27272a]">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-100 tracking-tight">Presentation Decks</h2>
-          <p className="text-xs text-zinc-400">Structured visual slide sequences for live instruction.</p>
+      {/* Top Deck Selector & Filter */}
+      <div className="flex flex-col space-y-3 pb-3 border-b border-[#27272a]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-100 tracking-tight">Presentation Decks</h2>
+            <p className="text-xs text-zinc-400">Structured visual slide sequences with speaker notes for live tutoring sessions.</p>
+          </div>
+
+          {/* Subject Filter Pills */}
+          <div className="flex items-center gap-1 bg-[#121215] p-1 rounded-lg border border-[#27272a] self-start sm:self-auto">
+            {[
+              { id: 'all', label: 'All Subjects' },
+              { id: 'math', label: 'Mathematics' },
+              { id: 'physics', label: 'Physics' },
+              { id: 'cs', label: 'Computer Science' }
+            ].map((sub) => (
+              <button
+                key={sub.id}
+                onClick={() => setSubjectFilter(sub.id)}
+                className={`px-2.5 py-1 rounded text-xs font-mono transition-all ${
+                  subjectFilter === sub.id
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 font-medium'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 bg-[#121215] p-1 rounded-lg border border-[#27272a]">
-          {Object.keys(SLIDE_DECKS).map((key) => {
+        {/* Deck Pills Horizontal Scroll */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {deckKeys.map((key) => {
             const deck = SLIDE_DECKS[key];
             const isSelected = key === selectedDeckKey;
+            const subLabel = deck.subject === 'math' ? 'MATH' : deck.subject === 'physics' ? 'PHYS' : 'CS';
             return (
               <button
                 key={key}
@@ -84,13 +150,20 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                   setSelectedDeckKey(key);
                   setCurrentSlideIndex(0);
                 }}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-md text-xs font-mono whitespace-nowrap transition-all flex items-center space-x-2 shrink-0 border ${
                   isSelected
-                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-750 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm font-medium'
+                    : 'bg-[#121215] text-zinc-400 border-[#27272a] hover:border-zinc-700 hover:text-zinc-200'
                 }`}
               >
-                {deck.title.split(':')[0]}
+                <span className={`text-[10px] px-1 py-0.5 rounded font-bold ${
+                  deck.subject === 'math' ? 'bg-cyan-950/60 text-cyan-400 border border-cyan-800/40' :
+                  deck.subject === 'physics' ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40' :
+                  'bg-violet-950/60 text-violet-400 border border-violet-800/40'
+                }`}>
+                  {subLabel} {deck.session}
+                </span>
+                <span className="truncate max-w-[140px] sm:max-w-none">{deck.title.split(':')[1] || deck.title}</span>
               </button>
             );
           })}
@@ -113,6 +186,26 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* Session Timer Widget */}
+            <div className="flex items-center space-x-1 px-2 py-1 rounded bg-[#09090b] border border-[#27272a] text-xs font-mono text-zinc-300">
+              <Clock className="w-3.5 h-3.5 text-zinc-400" />
+              <span>{formatTimer(timerSeconds)}</span>
+              <button
+                onClick={() => setIsTimerRunning(!isTimerRunning)}
+                className="ml-1 text-zinc-400 hover:text-zinc-100"
+                title={isTimerRunning ? 'Pause Timer (T)' : 'Start Timer (T)'}
+              >
+                {isTimerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              </button>
+              <button
+                onClick={() => { setTimerSeconds(0); setIsTimerRunning(false); }}
+                className="text-zinc-500 hover:text-zinc-300 ml-0.5"
+                title="Reset Timer"
+              >
+                <RotateCcw className="w-2.5 h-2.5" />
+              </button>
+            </div>
+
             <button
               onClick={() => setShowNotes(!showNotes)}
               className={`px-2.5 py-1 rounded text-xs font-mono border transition-all flex items-center space-x-1.5 ${
@@ -171,6 +264,13 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
               </div>
             )}
 
+            {/* Code Block if any */}
+            {currentSlide.code && (
+              <div className="p-4 rounded-lg bg-[#09090b] border border-[#27272a] font-mono text-xs text-zinc-200 overflow-x-auto">
+                <pre>{currentSlide.code}</pre>
+              </div>
+            )}
+
             {/* Formula Block */}
             {currentSlide.formula && (
               <div className="p-4 rounded bg-[#121215] border border-[#27272a] my-4">
@@ -209,11 +309,11 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
             <button
               onClick={() => setCurrentSlideIndex(0)}
               className="p-1.5 rounded bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-all text-xs"
-              title="First Slide"
+              title="First Slide (Home)"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">Use [← / →] to navigate</span>
+            <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">Use [← / → / Space] • [N] Notes • [G] Grid</span>
           </div>
 
           {/* Progress Indicator */}
