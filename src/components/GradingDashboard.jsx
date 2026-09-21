@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { INITIAL_SUBMISSIONS, EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
 import { calculateGradeBadge } from '../utils/gradingEngine';
-import MathTex from './MathTex';
+import { MathTex, MathText } from './MathTex';
 import {
   Award, CheckCircle2, Clock, Download,
   FileText, User, ChevronRight, Save, Trash2, Edit3, Filter, Check
@@ -209,7 +209,7 @@ export default function GradingDashboard() {
                     </div>
 
                     <div className="text-[11px] text-zinc-400 font-mono truncate mb-2">
-                      {exam?.title || sub.examId}
+                      <MathText text={exam?.title || sub.examId} />
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-[#27272a] text-xs font-mono">
@@ -244,7 +244,7 @@ export default function GradingDashboard() {
                   <h2 className="text-base font-semibold text-zinc-100 mt-1">
                     {activeSubmission.studentName} <span className="text-zinc-400 text-xs font-normal">({activeSubmission.studentId})</span>
                   </h2>
-                  <p className="text-xs text-zinc-400">{activeExam.title}</p>
+                  <p className="text-xs text-zinc-400"><MathText text={activeExam.title} /></p>
                 </div>
 
                 <div className="flex items-center space-x-3">
@@ -276,7 +276,7 @@ export default function GradingDashboard() {
                       {/* Question Header */}
                       <div className="flex items-center justify-between border-b border-[#27272a] pb-2">
                         <span className="text-xs font-mono font-semibold text-zinc-300">
-                          Problem {idx + 1}: {q.title} <span className="text-zinc-500 font-normal">({q.type})</span>
+                          Problem {idx + 1}: <MathText text={q.title} /> <span className="text-zinc-500 font-normal">({q.type})</span>
                         </span>
                         <div className="flex items-center space-x-2">
                           <span className="text-xs text-zinc-400 font-mono">Marks:</span>
@@ -295,7 +295,7 @@ export default function GradingDashboard() {
 
                       {/* Prompt Snippet */}
                       <div className="text-xs text-zinc-300 leading-relaxed">
-                        {q.prompt.split('\n\n')[0]}
+                        <MathText text={q.prompt} />
                       </div>
 
                       {/* Student's Response */}
@@ -307,13 +307,13 @@ export default function GradingDashboard() {
                           {q.type === 'multiple-choice' ? (
                             studentAns !== undefined ? (
                               <span>
-                                Choice {String.fromCharCode(65 + studentAns)}: {q.options[studentAns]}
+                                Choice {String.fromCharCode(65 + studentAns)}: <MathText text={q.options[studentAns]} />
                               </span>
                             ) : (
                               <span className="text-zinc-500 italic">No answer provided</span>
                             )
                           ) : (
-                            studentAns || <span className="text-zinc-500 italic">No response</span>
+                            studentAns !== undefined && studentAns !== '' ? <MathText text={String(studentAns)} /> : <span className="text-zinc-500 italic">No response</span>
                           )}
                         </div>
                       </div>
@@ -325,24 +325,24 @@ export default function GradingDashboard() {
                         </div>
                         {q.correctAnswer !== undefined && (
                           <div className="text-zinc-300 text-xs">
-                            <span className="text-zinc-500">Correct Option:</span> Choice {String.fromCharCode(65 + q.correctAnswer)} ({q.options?.[q.correctAnswer]})
+                            <span className="text-zinc-500">Correct Option:</span> Choice {String.fromCharCode(65 + q.correctAnswer)} (<MathText text={q.options?.[q.correctAnswer]} />)
                           </div>
                         )}
                         {q.solution && (
-                          <div className="text-zinc-300 font-mono text-xs whitespace-pre-line">
-                            {q.solution}
+                          <div className="text-zinc-300 text-xs whitespace-pre-line">
+                            <MathText text={q.solution} />
                           </div>
                         )}
                         {q.modelAnswer && (
-                          <div className="text-zinc-300 font-mono text-xs whitespace-pre-line">
-                            {q.modelAnswer}
+                          <div className="text-zinc-300 text-xs whitespace-pre-line">
+                            <MathText text={q.modelAnswer} />
                           </div>
                         )}
                         {q.rubric && (
                           <div className="pt-2 border-t border-[#27272a] space-y-1">
                             {q.rubric.map((r, ri) => (
                               <div key={ri} className="flex items-center justify-between text-xs text-zinc-300">
-                                <span>• {r.criterion}</span>
+                                <span>• <MathText text={r.criterion} /></span>
                                 <span className="font-mono text-zinc-200 font-semibold">+{r.marks}</span>
                               </div>
                             ))}

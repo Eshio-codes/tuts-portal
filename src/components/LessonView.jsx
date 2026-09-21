@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CURRICULUM, SUBJECTS } from '../data/curriculumData';
-import MathTex from './MathTex';
+import { MathTex, MathText } from './MathTex';
 import {
   BookOpen, Clock, CheckCircle2, AlertCircle, Maximize2, X,
   ChevronRight, ChevronLeft, Zap, Calculator, Cpu, Printer, Search, ArrowRight
@@ -122,7 +122,7 @@ export default function LessonView() {
                       {sess.status}
                     </span>
                   </div>
-                  <div className="font-medium text-xs text-zinc-200 line-clamp-1">{sess.title}</div>
+                  <div className="font-medium text-xs text-zinc-200 line-clamp-1"><MathText text={sess.title} /></div>
                   <div className="flex items-center text-[11px] text-zinc-500 mt-1 space-x-1.5">
                     <Clock className="w-3 h-3" />
                     <span>{sess.duration}</span>
@@ -179,12 +179,12 @@ export default function LessonView() {
             </div>
 
             <h1 className="text-2xl font-bold text-zinc-100 tracking-tight mb-2">
-              {currentSession.title}
+              <MathText text={currentSession.title} />
             </h1>
 
-            <p className="text-zinc-300 text-sm leading-relaxed mb-5">
-              {currentSession.overview}
-            </p>
+            <div className="text-zinc-300 text-sm leading-relaxed mb-5">
+              <MathText text={currentSession.overview} />
+            </div>
 
             {/* Learning Outcomes */}
             {currentSession.topics && (
@@ -196,7 +196,7 @@ export default function LessonView() {
                   {currentSession.topics.map((topic, i) => (
                     <span key={i} className="text-xs px-2.5 py-1 rounded bg-[#18181c] text-zinc-300 border border-[#27272a] flex items-center space-x-1.5">
                       <span className="w-1 h-1 rounded-full bg-zinc-400"></span>
-                      <span>{topic}</span>
+                      <span><MathText text={topic} /></span>
                     </span>
                   ))}
                 </div>
@@ -228,11 +228,11 @@ export default function LessonView() {
                 <div key={idx} className="p-5 rounded-lg bg-[#121215] border border-[#27272a] space-y-2">
                   <h2 className="text-sm font-semibold text-zinc-100 flex items-center space-x-2">
                     <span className="font-mono text-zinc-500">§ {currentSession.session}.{idx + 1}</span>
-                    <span>{sec.heading}</span>
+                    <span><MathText text={sec.heading} /></span>
                   </h2>
-                  <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-line">
-                    {sec.content}
-                  </p>
+                  <div className="text-zinc-300 text-sm leading-relaxed whitespace-pre-line">
+                    <MathText text={sec.content} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -273,8 +273,8 @@ export default function LessonView() {
                       </div>
                     </div>
                     <div className="p-3 bg-[#121215] border-t border-[#27272a]">
-                      <div className="text-xs font-medium text-zinc-200">{diag.title}</div>
-                      <div className="text-[11px] text-zinc-400 mt-0.5">{diag.desc}</div>
+                      <div className="text-xs font-medium text-zinc-200"><MathText text={diag.title} /></div>
+                      <div className="text-[11px] text-zinc-400 mt-0.5"><MathText text={diag.desc} /></div>
                     </div>
                   </div>
                 ))}
@@ -325,8 +325,8 @@ export default function LessonView() {
           <div className="relative max-w-4xl w-full bg-[#121215] rounded-lg border border-zinc-700 overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-[#27272a]">
               <div>
-                <h3 className="text-sm font-semibold text-zinc-100">{modalImage.title}</h3>
-                <p className="text-xs text-zinc-400">{modalImage.desc}</p>
+                <h3 className="text-sm font-semibold text-zinc-100"><MathText text={modalImage.title} /></h3>
+                <p className="text-xs text-zinc-400"><MathText text={modalImage.desc} /></p>
               </div>
               <button
                 onClick={() => setModalImage(null)}

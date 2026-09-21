@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { SLIDE_DECKS } from '../data/slideDecks';
-import MathTex from './MathTex';
+import { MathTex, MathText } from './MathTex';
 import {
   ChevronLeft, ChevronRight, Maximize, Minimize,
   LayoutGrid, FileText, CheckCircle2, X, RotateCcw,
@@ -253,10 +253,10 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
             {/* Title & Subtitle */}
             <div className="border-b border-[#27272a] pb-4">
               <span className="text-[11px] font-mono uppercase tracking-widest text-zinc-400 block mb-1">
-                {currentSlide.subtitle || currentDeck.subtitle}
+                <MathText text={currentSlide.subtitle || currentDeck.subtitle} />
               </span>
               <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 tracking-tight">
-                {currentSlide.title}
+                <MathText text={currentSlide.title} />
               </h1>
             </div>
 
@@ -266,7 +266,7 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                 {currentSlide.points.map((pt, i) => (
                   <div key={i} className="flex items-start space-x-3 text-zinc-200 text-base leading-relaxed">
                     <span className="text-zinc-400 mt-1 font-mono text-sm">•</span>
-                    <span>{pt}</span>
+                    <span className="flex-1"><MathText text={pt} /></span>
                   </div>
                 ))}
               </div>
@@ -307,7 +307,7 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
             <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 uppercase text-[10px] font-semibold shrink-0">
               Instructor Note
             </span>
-            <p className="leading-relaxed text-zinc-300">{currentSlide.notes}</p>
+            <p className="leading-relaxed text-zinc-300"><MathText text={currentSlide.notes} /></p>
           </div>
         )}
 
@@ -400,8 +400,8 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                       <span>SLIDE {idx + 1}</span>
                       {isCurrent && <span className="text-[10px] px-1 rounded bg-zinc-800 text-zinc-200">Active</span>}
                     </div>
-                    <div className="font-semibold text-xs text-zinc-200 line-clamp-1 mb-0.5">{s.title}</div>
-                    <div className="text-[11px] text-zinc-400 line-clamp-1">{s.subtitle}</div>
+                    <div className="font-semibold text-xs text-zinc-200 line-clamp-1 mb-0.5"><MathText text={s.title} /></div>
+                    <div className="text-[11px] text-zinc-400 line-clamp-1"><MathText text={s.subtitle} /></div>
                   </div>
                 );
               })}

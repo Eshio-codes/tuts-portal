@@ -1687,20 +1687,28 @@ export default function InteractiveTools() {
                   <div className="space-y-2">
                     <div className="p-3 rounded bg-[#121215] border border-[#27272a] flex items-center justify-between">
                       <div>
-                        <div className="text-zinc-400 text-[10px] uppercase">Law 1: ~(A ∧ B) ≡ ~A ∨ ~B</div>
-                        <div className="text-xs text-zinc-300 font-semibold">NAND({inA}, {inB}) = {circuitOutputs.nandOut} | OR(~{inA}, ~{inB}) = {circuitOutputs.orNotOut}</div>
+                        <div className="text-zinc-400 text-[10px] uppercase font-mono mb-0.5">
+                          <MathTex math="\text{De Morgan I: } \overline{A \cdot B} \equiv \overline{A} + \overline{B}" />
+                        </div>
+                        <div className="text-xs text-zinc-300 font-semibold font-mono">
+                          NAND({inA}, {inB}) = {circuitOutputs.nandOut} | OR(~{inA}, ~{inB}) = {circuitOutputs.orNotOut}
+                        </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-400 font-bold border border-emerald-600">
+                      <span className="px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-400 font-bold border border-emerald-600 font-mono text-xs">
                         {circuitOutputs.nandOut === circuitOutputs.orNotOut ? '✓ Equivalent' : 'Mismatch'}
                       </span>
                     </div>
 
                     <div className="p-3 rounded bg-[#121215] border border-[#27272a] flex items-center justify-between">
                       <div>
-                        <div className="text-zinc-400 text-[10px] uppercase">Law 2: ~(A ∨ B) ≡ ~A ∧ ~B</div>
-                        <div className="text-xs text-zinc-300 font-semibold">NOR({inA}, {inB}) = {circuitOutputs.norOut} | AND(~{inA}, ~{inB}) = {circuitOutputs.andNotOut}</div>
+                        <div className="text-zinc-400 text-[10px] uppercase font-mono mb-0.5">
+                          <MathTex math="\text{De Morgan II: } \overline{A + B} \equiv \overline{A} \cdot \overline{B}" />
+                        </div>
+                        <div className="text-xs text-zinc-300 font-semibold font-mono">
+                          NOR({inA}, {inB}) = {circuitOutputs.norOut} | AND(~{inA}, ~{inB}) = {circuitOutputs.andNotOut}
+                        </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-400 font-bold border border-emerald-600">
+                      <span className="px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-400 font-bold border border-emerald-600 font-mono text-xs">
                         {circuitOutputs.norOut === circuitOutputs.andNotOut ? '✓ Equivalent' : 'Mismatch'}
                       </span>
                     </div>
@@ -1743,10 +1751,10 @@ export default function InteractiveTools() {
                   <table className="w-full text-left">
                     <thead className="bg-[#121215] border-b border-[#27272a] text-zinc-400 text-[11px]">
                       <tr>
-                        <th className="py-2 px-4">A</th>
-                        <th className="py-2 px-4">B</th>
-                        <th className="py-2 px-4">Sum (A ⊕ B)</th>
-                        <th className="py-2 px-4">Carry (A ∧ B)</th>
+                        <th className="py-2 px-4"><MathTex math="A" /></th>
+                        <th className="py-2 px-4"><MathTex math="B" /></th>
+                        <th className="py-2 px-4"><MathTex math="\text{Sum} \ (A \oplus B)" /></th>
+                        <th className="py-2 px-4"><MathTex math="\text{Carry} \ (A \cdot B)" /></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#27272a]">
@@ -1774,11 +1782,11 @@ export default function InteractiveTools() {
                   <table className="w-full text-left">
                     <thead className="bg-[#121215] border-b border-[#27272a] text-zinc-400 text-[11px]">
                       <tr>
-                        <th className="py-2 px-3">A</th>
-                        <th className="py-2 px-3">B</th>
-                        <th className="py-2 px-3">Cin</th>
-                        <th className="py-2 px-3">Sum</th>
-                        <th className="py-2 px-3">Cout</th>
+                        <th className="py-2 px-3"><MathTex math="A" /></th>
+                        <th className="py-2 px-3"><MathTex math="B" /></th>
+                        <th className="py-2 px-3"><MathTex math="C_{\text{in}}" /></th>
+                        <th className="py-2 px-3"><MathTex math="\text{Sum}" /></th>
+                        <th className="py-2 px-3"><MathTex math="C_{\text{out}}" /></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#27272a]">
@@ -1834,7 +1842,7 @@ export default function InteractiveTools() {
               {/* Source Voltage Vrms */}
               <div>
                 <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                  <span>Source Voltage (V_rms):</span>
+                  <span>Source Voltage (<MathTex math="V_{\text{rms}}" />):</span>
                   <span className="text-zinc-200 font-semibold">{acVrms} V</span>
                 </div>
                 <input
@@ -1850,7 +1858,7 @@ export default function InteractiveTools() {
               {/* Frequency f */}
               <div>
                 <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                  <span>Frequency (f):</span>
+                  <span>Frequency (<MathTex math="f" />):</span>
                   <span className="text-zinc-200 font-semibold">{acFreq} Hz</span>
                 </div>
                 <input
@@ -1862,13 +1870,13 @@ export default function InteractiveTools() {
                   className="w-full accent-zinc-400"
                 />
                 <div className="flex justify-between text-[10px] text-zinc-500 font-mono mt-1">
-                  <span>ω = {omega.toFixed(1)} rad/s</span>
+                  <span><MathTex math={`\\omega = ${omega.toFixed(1)}\\text{ rad/s}`} /></span>
                   <button
                     onClick={() => setAcFreq(Math.round(resFreq))}
                     className="text-amber-400 hover:underline"
                     title="Jump to resonant frequency"
                   >
-                    Set to f₀ ({resFreq.toFixed(1)}Hz)
+                    Set to <MathTex math={`f_0 = ${resFreq.toFixed(1)}\\text{ Hz}`} />
                   </button>
                 </div>
               </div>
@@ -1876,7 +1884,7 @@ export default function InteractiveTools() {
               {/* Resistance R */}
               <div>
                 <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                  <span>Resistance (R):</span>
+                  <span>Resistance (<MathTex math="R" />):</span>
                   <span className="text-zinc-200 font-semibold">{acR} Ω</span>
                 </div>
                 <input
@@ -1892,7 +1900,7 @@ export default function InteractiveTools() {
               {/* Inductance L */}
               <div>
                 <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                  <span>Inductance (L):</span>
+                  <span>Inductance (<MathTex math="L" />):</span>
                   <span className="text-zinc-200 font-semibold">{acL} mH</span>
                 </div>
                 <input
@@ -1908,7 +1916,7 @@ export default function InteractiveTools() {
               {/* Capacitance C */}
               <div>
                 <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                  <span>Capacitance (C):</span>
+                  <span>Capacitance (<MathTex math="C" />):</span>
                   <span className="text-zinc-200 font-semibold">{acC} μF</span>
                 </div>
                 <input
@@ -2027,27 +2035,35 @@ export default function InteractiveTools() {
               {/* RLC Calculations Matrix */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
                 <div className="p-3 rounded-lg bg-[#09090b] border border-[#27272a]">
-                  <div className="text-[10px] text-zinc-500 uppercase">Impedance (Z)</div>
+                  <div className="text-[10px] text-zinc-500 uppercase">Impedance (<MathTex math="Z" />)</div>
                   <div className="text-sm font-semibold text-zinc-100 mt-0.5">{acZ.toFixed(2)} Ω</div>
-                  <div className="text-[10px] text-zinc-500 mt-1">R={acR}Ω, X={netX.toFixed(1)}Ω</div>
+                  <div className="text-[10px] text-zinc-500 mt-1">
+                    <MathTex math={`R = ${acR}\\Omega, \\; X = ${netX.toFixed(1)}\\Omega`} />
+                  </div>
                 </div>
 
                 <div className="p-3 rounded-lg bg-[#09090b] border border-[#27272a]">
-                  <div className="text-[10px] text-zinc-500 uppercase">RMS Current (I_rms)</div>
+                  <div className="text-[10px] text-zinc-500 uppercase">RMS Current (<MathTex math="I_{\text{rms}}" />)</div>
                   <div className="text-sm font-semibold text-emerald-400 mt-0.5">{acIrms.toFixed(3)} A</div>
-                  <div className="text-[10px] text-zinc-500 mt-1">I_peak = {acIpeak.toFixed(3)} A</div>
+                  <div className="text-[10px] text-zinc-500 mt-1">
+                    <MathTex math={`I_{\\text{peak}} = ${acIpeak.toFixed(3)}\\text{ A}`} />
+                  </div>
                 </div>
 
                 <div className="p-3 rounded-lg bg-[#09090b] border border-[#27272a]">
-                  <div className="text-[10px] text-zinc-500 uppercase">Phase Angle (ϕ)</div>
+                  <div className="text-[10px] text-zinc-500 uppercase">Phase Angle (<MathTex math="\phi" />)</div>
                   <div className="text-sm font-semibold text-amber-400 mt-0.5">{phaseDeg.toFixed(1)}°</div>
-                  <div className="text-[10px] text-zinc-500 mt-1">Power Factor: {powerFactor.toFixed(3)}</div>
+                  <div className="text-[10px] text-zinc-500 mt-1">
+                    <MathTex math={`\\cos\\phi = ${powerFactor.toFixed(3)}`} />
+                  </div>
                 </div>
 
                 <div className="p-3 rounded-lg bg-[#09090b] border border-[#27272a]">
-                  <div className="text-[10px] text-zinc-500 uppercase">Resonant Freq (f₀)</div>
+                  <div className="text-[10px] text-zinc-500 uppercase">Resonant Freq (<MathTex math="f_0" />)</div>
                   <div className="text-sm font-semibold text-sky-400 mt-0.5">{resFreq.toFixed(1)} Hz</div>
-                  <div className="text-[10px] text-zinc-500 mt-1">Q-Factor: {qFactor.toFixed(2)}</div>
+                  <div className="text-[10px] text-zinc-500 mt-1">
+                    <MathTex math={`Q = ${qFactor.toFixed(2)}`} />
+                  </div>
                 </div>
               </div>
 
@@ -2101,17 +2117,20 @@ export default function InteractiveTools() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
               {[
-                { op: 'AND (A & B)', res: (numA & numB) & 0xFF, desc: 'Masking / bit filtering' },
-                { op: 'OR (A | B)', res: (numA | numB) & 0xFF, desc: 'Setting bit flags' },
-                { op: 'XOR (A ^ B)', res: (numA ^ numB) & 0xFF, desc: 'Toggling & parity check' },
-                { op: 'NOT (~A)', res: (~numA) & 0xFF, desc: '1s complement bit flip' },
-                { op: 'Shift Left (A << 1)', res: (numA << 1) & 0xFF, desc: 'Arithmetic multiplication by 2' },
-                { op: 'Shift Right (A >> 1)', res: (numA >> 1) & 0xFF, desc: 'Logical division by 2' }
+                { op: 'A \\land B', label: 'AND (Bitwise AND)', res: (numA & numB) & 0xFF, desc: 'Masking / bit filtering' },
+                { op: 'A \\lor B', label: 'OR (Bitwise OR)', res: (numA | numB) & 0xFF, desc: 'Setting bit flags' },
+                { op: 'A \\oplus B', label: 'XOR (Bitwise XOR)', res: (numA ^ numB) & 0xFF, desc: 'Toggling & parity check' },
+                { op: '\\sim A', label: 'NOT (1s Complement)', res: (~numA) & 0xFF, desc: 'Bit flip / inversion' },
+                { op: 'A \\ll 1', label: 'Shift Left (A << 1)', res: (numA << 1) & 0xFF, desc: 'Arithmetic multiplication by 2' },
+                { op: 'A \\gg 1', label: 'Shift Right (A >> 1)', res: (numA >> 1) & 0xFF, desc: 'Logical division by 2' }
               ].map((item, idx) => (
                 <div key={idx} className="p-3 rounded-lg bg-[#09090b] border border-[#27272a] flex items-center justify-between">
                   <div>
-                    <div className="font-semibold text-zinc-200">{item.op}</div>
-                    <div className="text-[10px] text-zinc-500">{item.desc}</div>
+                    <div className="font-semibold text-zinc-200 flex items-center space-x-2">
+                      <MathTex math={item.op} />
+                      <span className="text-[11px] text-zinc-400 font-normal">({item.label})</span>
+                    </div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5">{item.desc}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-zinc-100">{item.res} (0x{item.res.toString(16).toUpperCase().padStart(2, '0')})</div>

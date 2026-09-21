@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
-import MathTex from './MathTex';
+import { MathTex, MathText } from './MathTex';
 import { gradeExamSubmission } from '../utils/gradingEngine';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
@@ -153,7 +153,7 @@ export default function ExamPortal({ onExamSubmitted }) {
                         <span className="text-[11px] font-mono uppercase px-1.5 py-0.2 rounded bg-zinc-850 border border-zinc-700 text-zinc-300 font-semibold">
                           {ex.subject}
                         </span>
-                        <span className="text-xs font-semibold text-zinc-200">{ex.title}</span>
+                        <span className="text-xs font-semibold text-zinc-200"><MathText text={ex.title} /></span>
                       </div>
                       <div className="text-xs font-mono text-zinc-400 flex items-center space-x-2">
                         <span>{ex.timeLimitMinutes} mins</span>
@@ -161,7 +161,7 @@ export default function ExamPortal({ onExamSubmitted }) {
                         <span>{ex.totalPoints} marks</span>
                       </div>
                     </div>
-                    <div className="text-xs text-zinc-400 leading-relaxed">{ex.description}</div>
+                    <div className="text-xs text-zinc-400 leading-relaxed"><MathText text={ex.description} /></div>
                   </div>
                 );
               })}
@@ -305,9 +305,9 @@ export default function ExamPortal({ onExamSubmitted }) {
                 <div className="flex items-center justify-between pb-3 border-b border-[#27272a] mb-4">
                   <div>
                     <span className="text-xs font-mono text-zinc-400 uppercase">
-                      {currentQ.sectionTitle || 'Section'} • Question {currentQuestionIndex + 1}
+                      <MathText text={currentQ.sectionTitle || 'Section'} /> • Question {currentQuestionIndex + 1}
                     </span>
-                    <h3 className="text-base font-semibold text-zinc-100 mt-0.5">{currentQ.title}</h3>
+                    <h3 className="text-base font-semibold text-zinc-100 mt-0.5"><MathText text={currentQ.title} /></h3>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -331,16 +331,7 @@ export default function ExamPortal({ onExamSubmitted }) {
 
                 {/* Prompt */}
                 <div className="text-zinc-100 text-sm leading-relaxed mb-6">
-                  {currentQ.mathPrompt ? (
-                    <div className="space-y-2">
-                      <p>{currentQ.prompt.split('\n\n')[0]}</p>
-                      {currentQ.prompt.includes('\n\n') && (
-                        <MathTex math={currentQ.prompt.split('\n\n')[1]} block />
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-zinc-200">{currentQ.prompt}</p>
-                  )}
+                  <MathText text={currentQ.prompt} />
                 </div>
 
                 {/* Input Controls */}
@@ -363,7 +354,7 @@ export default function ExamPortal({ onExamSubmitted }) {
                               {String.fromCharCode(65 + optIdx)}
                             </span>
                             <span className="text-xs sm:text-sm">
-                              {opt.includes('\\') ? <MathTex math={opt} /> : opt}
+                              <MathText text={opt} />
                             </span>
                           </button>
                         );

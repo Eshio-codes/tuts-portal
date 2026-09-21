@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QUESTION_BANK } from '../data/questionBank';
 import { evaluateAnswer } from '../utils/gradingEngine';
-import MathTex from './MathTex';
+import { MathTex, MathText } from './MathTex';
 import {
   HelpCircle, CheckCircle2, XCircle, ChevronDown,
   ChevronUp, RotateCcw, Award, BookOpen, Check, Search, Filter,
@@ -333,17 +333,10 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
 
                 {/* Prompt */}
                 <div className="text-zinc-100 text-sm sm:text-base font-normal mb-5 leading-relaxed">
-                  <div className="font-semibold text-sm text-zinc-100 mb-1">{q.title}</div>
-                  {q.mathPrompt ? (
-                    <div className="space-y-2">
-                      <p>{q.prompt.split('\n\n')[0]}</p>
-                      {q.prompt.includes('\n\n') && (
-                        <MathTex math={q.prompt.split('\n\n')[1]} block />
-                      )}
-                    </div>
-                  ) : (
-                    <p className="text-zinc-200">{q.prompt}</p>
-                  )}
+                  <div className="font-semibold text-sm text-zinc-100 mb-1"><MathText text={q.title} /></div>
+                  <div className="text-zinc-200">
+                    <MathText text={q.prompt} />
+                  </div>
                 </div>
 
                 {/* Answer Form */}
@@ -378,7 +371,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                                 {String.fromCharCode(65 + optIdx)}
                               </span>
                               <span className="text-xs sm:text-sm">
-                                {opt.includes('\\') ? <MathTex math={opt} /> : opt}
+                                <MathText text={opt} />
                               </span>
                             </div>
                             {isSubmitted && optIdx === q.correctAnswer && (
@@ -491,14 +484,14 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                     </div>
 
                     {q.explanation && (
-                      <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
-                        {q.explanation}
-                      </p>
+                      <div className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
+                        <MathText text={q.explanation} />
+                      </div>
                     )}
 
                     {q.solution && (
                       <div className="text-xs text-zinc-200 leading-relaxed whitespace-pre-line font-mono bg-[#121215] p-3 rounded border border-[#27272a]">
-                        {q.solution}
+                        <MathText text={q.solution} />
                       </div>
                     )}
 
@@ -506,7 +499,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                       <div className="space-y-1.5">
                         <div className="text-[11px] font-mono text-zinc-400 uppercase">Model Derivation:</div>
                         <div className="text-xs text-zinc-200 leading-relaxed whitespace-pre-line font-mono bg-[#121215] p-3 rounded border border-[#27272a]">
-                          {q.modelAnswer}
+                          <MathText text={q.modelAnswer} />
                         </div>
                       </div>
                     )}
@@ -521,7 +514,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                         <div className="space-y-1">
                           {q.rubric.map((rub, rIdx) => (
                             <div key={rIdx} className="flex items-center justify-between text-xs p-1.5 rounded bg-[#121215] border border-[#27272a]">
-                              <span className="text-zinc-300 text-[11px]">• {rub.criterion}</span>
+                              <span className="text-zinc-300 text-[11px]">• <MathText text={rub.criterion} /></span>
                               <span className="font-mono text-zinc-200 font-semibold text-[11px]">+{rub.marks} pts</span>
                             </div>
                           ))}
