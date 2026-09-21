@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { INITIAL_SUBMISSIONS, EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
+import { calculateGradeBadge } from '../utils/gradingEngine';
 import MathTex from './MathTex';
 import {
   Award, CheckCircle2, Clock, Download,
@@ -117,14 +118,6 @@ export default function GradingDashboard() {
     document.body.removeChild(link);
   };
 
-  const getLetterGrade = (pct) => {
-    if (pct >= 90) return { grade: 'A*', style: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40' };
-    if (pct >= 80) return { grade: 'A', style: 'text-zinc-200 bg-zinc-800 border-zinc-700' };
-    if (pct >= 70) return { grade: 'B', style: 'text-zinc-300 bg-zinc-850 border-zinc-750' };
-    if (pct >= 60) return { grade: 'C', style: 'text-amber-400 bg-amber-950/40 border-amber-800/40' };
-    return { grade: 'F', style: 'text-rose-400 bg-rose-950/40 border-rose-800/40' };
-  };
-
   const filteredSubmissions = submissions.filter((s) => {
     if (filterStatus === 'all') return true;
     return s.status.toLowerCase() === filterStatus.toLowerCase();
@@ -133,7 +126,7 @@ export default function GradingDashboard() {
   const liveTotalScore = Object.values(gradingScores).reduce((acc, v) => acc + (parseFloat(v) || 0), 0);
   const liveMaxScore = activeExam?.totalPoints || 50;
   const livePercentage = Math.round((liveTotalScore / liveMaxScore) * 100);
-  const liveGradeBadge = getLetterGrade(livePercentage);
+  const liveGradeBadge = calculateGradeBadge(livePercentage);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
@@ -192,7 +185,7 @@ export default function GradingDashboard() {
               filteredSubmissions.map((sub) => {
                 const isSelected = sub.id === selectedSubId;
                 const exam = EXAMS.find((e) => e.id === sub.examId);
-                const gradeBadge = getLetterGrade(sub.percentage || 0);
+                const gradeBadge = calculateGradeBadge(sub.percentage || 0);
 
                 return (
                   <div

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { QUESTION_BANK } from '../data/questionBank';
+import { evaluateAnswer } from '../utils/gradingEngine';
 import MathTex from './MathTex';
 import {
   HelpCircle, CheckCircle2, XCircle, ChevronDown,
@@ -70,13 +71,8 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
   const totalInView = filteredQuestions.length;
   const submittedInView = filteredQuestions.filter(q => submittedStates[q.id]);
   const correctInView = submittedInView.filter(q => {
-    const answer = userAnswers[q.id];
-    if (q.type === 'multiple-choice') return answer === q.correctAnswer;
-    if (q.type === 'numeric') {
-      const num = parseFloat(answer);
-      return !isNaN(num) && Math.abs(num - q.correctAnswer) <= (q.tolerance || 0.01);
-    }
-    return false; // free response not auto-graded
+    const result = evaluateAnswer(q, userAnswers[q.id]);
+    return result.isCorrect === true;
   });
 
   const handleSelectOption = (qId, optionIdx) => {
@@ -279,12 +275,8 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
 
             let isCorrect = false;
             if (isSubmitted) {
-              if (q.type === 'multiple-choice') {
-                isCorrect = answer === q.correctAnswer;
-              } else if (q.type === 'numeric') {
-                const numericVal = parseFloat(answer);
-                isCorrect = !isNaN(numericVal) && Math.abs(numericVal - q.correctAnswer) <= (q.tolerance || 0.01);
-              }
+              const evalResult = evaluateAnswer(q, answer);
+              isCorrect = evalResult.isCorrect === true;
             }
 
             return (

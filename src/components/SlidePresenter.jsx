@@ -54,14 +54,22 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
       document.documentElement.requestFullscreen().catch((err) => {
         console.error('Fullscreen error:', err);
       });
-      setIsFullscreen(true);
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
-        setIsFullscreen(false);
       }
     }
   };
+
+  // Synchronize fullscreen state on native changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {

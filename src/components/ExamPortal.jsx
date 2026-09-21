@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
 import MathTex from './MathTex';
+import { gradeExamSubmission } from '../utils/gradingEngine';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
   ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw
@@ -73,43 +74,8 @@ export default function ExamPortal({ onExamSubmitted }) {
     }));
   };
 
-  const calculateAutoScore = () => {
-    let autoScore = 0;
-    let maxAutoScore = 0;
-    const scores = {};
-
-    examQuestions.forEach((q) => {
-      const userAns = answers[q.id];
-      const qMaxPoints = q.points || (q.type === 'multiple-choice' ? 4 : 4);
-
-      if (q.type === 'multiple-choice') {
-        maxAutoScore += qMaxPoints;
-        if (userAns === q.correctAnswer) {
-          scores[q.id] = qMaxPoints;
-          autoScore += qMaxPoints;
-        } else {
-          scores[q.id] = 0;
-        }
-      } else if (q.type === 'numeric') {
-        maxAutoScore += qMaxPoints;
-        const num = parseFloat(userAns);
-        if (!isNaN(num) && Math.abs(num - q.correctAnswer) <= (q.tolerance || 0.01)) {
-          scores[q.id] = qMaxPoints;
-          autoScore += qMaxPoints;
-        } else {
-          scores[q.id] = 0;
-        }
-      } else {
-        // Free response requires tutor grading
-        scores[q.id] = 0; // pending
-      }
-    });
-
-    return { autoScore, maxAutoScore, scores };
-  };
-
   const handleFinalSubmit = () => {
-    const { autoScore, maxAutoScore, scores } = calculateAutoScore();
+    const { autoScore, scoresMap } = gradeExamSubmission(examQuestions, answers);
     const submission = {
       id: `sub-${Date.now()}`,
       studentName: studentName || 'Student',
@@ -118,7 +84,7 @@ export default function ExamPortal({ onExamSubmitted }) {
       submittedAt: new Date().toISOString(),
       status: 'Pending',
       answers,
-      scores,
+      scores: scoresMap,
       totalScore: autoScore,
       maxScore: activeExam.totalPoints,
       percentage: Math.round((autoScore / activeExam.totalPoints) * 100),
