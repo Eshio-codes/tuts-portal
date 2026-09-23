@@ -106,7 +106,7 @@ export default function AuthGate({ onStudentLogin, onTutorLogin }) {
                     type={showCode ? 'text' : 'password'}
                     value={accessCode}
                     onChange={e => setAccessCode(e.target.value)}
-                    placeholder="STEM-XXXX"
+                    placeholder="e.g. STEM-ALL3, MATH-CALC"
                     autoComplete="off"
                     className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 pr-10 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors font-mono uppercase"
                   />
@@ -119,8 +119,8 @@ export default function AuthGate({ onStudentLogin, onTutorLogin }) {
                     {showCode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="mt-1.5 text-xs text-zinc-600">
-                  Access code provided by your tutor
+                <p className="mt-1.5 text-xs text-zinc-500">
+                  Subject-specific pass (MATH, PHYS, CS) or 3-course general pass (STEM)
                 </p>
               </div>
 
