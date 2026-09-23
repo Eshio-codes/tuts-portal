@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { TUTOR_PASSPHRASE_HASH, EXAM_CODE_HASHES } from '../auth/authConfig';
+import { TUTOR_PASSPHRASE_HASH, EXAM_CODE_HASHES, getCodeScope, SCOPES } from '../auth/authConfig';
 
 const SESSION_KEY = 'tuts_auth';
 
@@ -39,7 +39,7 @@ export function useAuth() {
   const loginTutor = useCallback(async (passphrase) => {
     const hash = await sha256(passphrase.trim());
     if (hash !== TUTOR_PASSPHRASE_HASH) return 'Incorrect passphrase.';
-    const session = { role: 'tutor' };
+    const session = { role: 'tutor', scope: SCOPES.ALL };
     saveSession(session);
     setAuth(session);
     return null;
@@ -48,9 +48,11 @@ export function useAuth() {
   // Returns null on success, error string on failure.
   const loginStudent = useCallback(async (name, code) => {
     if (!name.trim()) return 'Enter your name.';
-    const hash = await sha256(code.trim().toUpperCase());
+    const normalizedCode = code.trim().toUpperCase();
+    const hash = await sha256(normalizedCode);
     if (!EXAM_CODE_HASHES.includes(hash)) return 'Invalid exam access code.';
-    const session = { role: 'student', name: name.trim(), code: code.trim().toUpperCase() };
+    const scope = getCodeScope(hash, normalizedCode);
+    const session = { role: 'student', name: name.trim(), code: normalizedCode, scope };
     saveSession(session);
     setAuth(session);
     return null;
@@ -62,12 +64,14 @@ export function useAuth() {
   }, []);
 
   return {
-    auth,                          // null | { role: 'tutor' } | { role: 'student', name, code }
+    auth,                          // null | { role: 'tutor', scope } | { role: 'student', name, code, scope }
     role: auth?.role ?? null,      // 'tutor' | 'student' | null
+    scope: auth?.scope ?? (auth?.role === 'tutor' ? SCOPES.ALL : null),
     isAuthenticated: !!auth,
     isTutor: auth?.role === 'tutor',
     isStudent: auth?.role === 'student',
     studentName: auth?.name ?? '',
+    studentCode: auth?.code ?? '',
     loginTutor,
     loginStudent,
     logout,

@@ -6,11 +6,33 @@ import { gradeExamSubmission } from '../utils/gradingEngine';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
   ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw,
-  ShieldAlert, ShieldCheck, AlertOctagon
+  ShieldAlert, ShieldCheck, AlertOctagon, Lock, Unlock, KeyRound, Sparkles
 } from 'lucide-react';
 
-export default function ExamPortal({ studentName: authStudentName = '', isTutor = false, onExamSubmitted }) {
-  const [selectedExamId, setSelectedExamId] = useState('exam-stem-s2');
+export default function ExamPortal({
+  studentName: authStudentName = '',
+  studentCode = '',
+  scope = 'all',
+  isTutor = false,
+  onExamSubmitted
+}) {
+  const isExamUnlocked = (exam) => {
+    if (!exam) return false;
+    if (isTutor || scope === 'all') return true;
+    if (scope === 'math' && exam.subject === 'math') return true;
+    if (scope === 'physics' && exam.subject === 'physics') return true;
+    if (scope === 'cs' && exam.subject === 'cs') return true;
+    return false;
+  };
+
+  const getInitialExamId = () => {
+    const defaultExam = EXAMS.find((e) => e.id === 'exam-stem-s2');
+    if (defaultExam && isExamUnlocked(defaultExam)) return defaultExam.id;
+    const firstUnlocked = EXAMS.find(isExamUnlocked);
+    return firstUnlocked ? firstUnlocked.id : EXAMS[0].id;
+  };
+
+  const [selectedExamId, setSelectedExamId] = useState(getInitialExamId);
   const [isExamActive, setIsExamActive] = useState(false);
   const [studentName, setStudentName] = useState(authStudentName);
   const [studentId, setStudentId] = useState('');
@@ -22,12 +44,22 @@ export default function ExamPortal({ studentName: authStudentName = '', isTutor 
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submittedReceipt, setSubmittedReceipt] = useState(null);
 
-  // Sync prop changes into state
+  // Sync prop changes into state and verify selected exam is allowed
   useEffect(() => {
     if (authStudentName && !studentName) {
       setStudentName(authStudentName);
     }
   }, [authStudentName]);
+
+  useEffect(() => {
+    const current = EXAMS.find((e) => e.id === selectedExamId);
+    if (!current || !isExamUnlocked(current)) {
+      const firstAllowed = EXAMS.find(isExamUnlocked);
+      if (firstAllowed) {
+        setSelectedExamId(firstAllowed.id);
+      }
+    }
+  }, [scope, isTutor]);
 
   const activeExam = EXAMS.find((e) => e.id === selectedExamId) || EXAMS[0];
 
@@ -105,6 +137,10 @@ export default function ExamPortal({ studentName: authStudentName = '', isTutor 
   const handleStartExam = () => {
     if (!studentName.trim()) {
       setStartError('Please enter your full name before starting the exam.');
+      return;
+    }
+    if (!isExamUnlocked(activeExam)) {
+      setStartError(`Your access pass does not include ${activeExam.subject.toUpperCase()} examinations. Please choose an authorized assessment.`);
       return;
     }
     setStartError('');
@@ -193,6 +229,33 @@ export default function ExamPortal({ studentName: authStudentName = '', isTutor 
             <p className="text-xs text-zinc-400 mt-0.5">Timed standardized assessments with automated marking and rubric derivation review.</p>
           </div>
 
+          {/* Access Scope Banner */}
+          <div className="p-3.5 rounded-xl bg-[#121215] border border-[#27272a] flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+            <div className="flex items-center space-x-2.5">
+              <div className={`p-2 rounded-lg ${isTutor ? 'bg-amber-950/70 border border-amber-800/60 text-amber-300' : 'bg-cyan-950/70 border border-cyan-800/60 text-cyan-300'}`}>
+                <KeyRound className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-[10px] text-zinc-500 uppercase">Authorized Exam Scope</div>
+                <div className="text-zinc-200 font-semibold flex items-center gap-1.5">
+                  <span>{isTutor ? 'Tutor Full Access (All Subjects)' : scope === 'all' ? '3-Course Comprehensive Pass (Math, Phys, CS)' : `${scope.toUpperCase()} Examination Pass`}</span>
+                  {studentCode && (
+                    <span className="text-[11px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                      {studentCode}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="text-[11px] text-zinc-400">
+              {isTutor || scope === 'all' ? (
+                <span className="text-emerald-400 font-semibold">● All Assessments Unlocked</span>
+              ) : (
+                <span className="text-cyan-400 font-semibold">● {scope.toUpperCase()} Assessments Only</span>
+              )}
+            </div>
+          </div>
+
           {/* Assessment List */}
           <div className="space-y-3">
             <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-400 block">
@@ -201,14 +264,24 @@ export default function ExamPortal({ studentName: authStudentName = '', isTutor 
             <div className="space-y-2.5">
               {EXAMS.map((ex) => {
                 const isSelected = ex.id === selectedExamId;
+                const unlocked = isExamUnlocked(ex);
                 return (
                   <div
                     key={ex.id}
-                    onClick={() => setSelectedExamId(ex.id)}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                      isSelected
-                        ? 'bg-[#18181c] border-zinc-600 shadow-sm'
-                        : 'bg-[#121215] border-[#27272a] hover:border-zinc-700'
+                    onClick={() => {
+                      if (unlocked) {
+                        setSelectedExamId(ex.id);
+                        setStartError('');
+                      } else {
+                        setStartError(`This ${ex.subject.toUpperCase()} exam is locked for your current pass (${studentCode || scope.toUpperCase()}). Please select an authorized subject or contact your tutor.`);
+                      }
+                    }}
+                    className={`p-4 rounded-lg border transition-all ${
+                      !unlocked
+                        ? 'opacity-60 bg-[#0c0c0e] border-[#1e1e22] cursor-not-allowed'
+                        : isSelected
+                        ? 'bg-[#18181c] border-zinc-500 shadow-sm cursor-pointer'
+                        : 'bg-[#121215] border-[#27272a] hover:border-zinc-700 cursor-pointer'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
@@ -217,6 +290,17 @@ export default function ExamPortal({ studentName: authStudentName = '', isTutor 
                           {ex.subject}
                         </span>
                         <span className="text-xs font-semibold text-zinc-200"><MathText text={ex.title} /></span>
+                        {unlocked ? (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 flex items-center gap-1">
+                            <Unlock className="w-2.5 h-2.5" />
+                            <span>Unlocked</span>
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-rose-950/60 border border-rose-900/50 text-rose-400 flex items-center gap-1">
+                            <Lock className="w-2.5 h-2.5" />
+                            <span>Locked</span>
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs font-mono text-zinc-400 flex items-center space-x-2">
                         <span>{ex.timeLimitMinutes} mins</span>

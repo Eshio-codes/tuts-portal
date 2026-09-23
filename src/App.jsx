@@ -12,7 +12,7 @@ import InteractiveTools from './components/InteractiveTools';
 import { useAuth } from './hooks/useAuth';
 
 export default function App() {
-  const { auth, isAuthenticated, isTutor, studentName, loginTutor, loginStudent, logout } = useAuth();
+  const { auth, isAuthenticated, isTutor, studentName, studentCode, scope, loginTutor, loginStudent, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('lessons');
 
   if (!isAuthenticated) {
@@ -40,6 +40,8 @@ export default function App() {
           {activeTab === 'exams' && (
             <ExamPortal
               studentName={studentName}
+              studentCode={studentCode}
+              scope={scope}
               isTutor={isTutor}
             />
           )}
