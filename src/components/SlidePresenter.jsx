@@ -6,7 +6,8 @@ import {
   LayoutGrid, FileText, CheckCircle2, X, RotateCcw,
   Play, Pause, Clock, Code2, BookOpen, Layers,
   Search, PanelLeftClose, PanelLeft, MousePointerClick,
-  Mouse, AlignJustify, MonitorPlay, Printer, ChevronsLeft, ChevronsRight
+  Mouse, AlignJustify, MonitorPlay, Printer, ChevronsLeft, ChevronsRight,
+  Shuffle, Sliders
 } from 'lucide-react';
 
 export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
@@ -72,7 +73,7 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
     setCurrentSlideIndex((prev) => Math.max(prev - 1, 0));
   }, []);
 
-  const handleSelectSlide = (idx) => {
+  const handleSelectSlide = useCallback((idx) => {
     setCurrentSlideIndex(idx);
     if (viewMode === 'continuous') {
       const targetEl = document.getElementById(`continuous-slide-${idx}`);
@@ -80,7 +81,41 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
         targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
-  };
+  }, [viewMode]);
+
+  // Filtered decks list by subject and search query
+  const deckKeys = Object.keys(SLIDE_DECKS).filter((key) => {
+    const deck = SLIDE_DECKS[key];
+    const matchesSubject = subjectFilter === 'all' || deck.subject === subjectFilter;
+    const matchesSearch =
+      searchQuery.trim() === '' ||
+      deck.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deck.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deck.slides.some((s) => s.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesSubject && matchesSearch;
+  });
+
+  // Pick a random course material deck
+  const handleRandomDeck = useCallback(() => {
+    const pool = deckKeys.length > 0 ? deckKeys : Object.keys(SLIDE_DECKS);
+    if (pool.length === 0) return;
+    const otherDecks = pool.filter((k) => k !== selectedDeckKey);
+    const targetPool = otherDecks.length > 0 ? otherDecks : pool;
+    const randomIndex = Math.floor(Math.random() * targetPool.length);
+    const chosenKey = targetPool[randomIndex];
+    setSelectedDeckKey(chosenKey);
+    setCurrentSlideIndex(0);
+  }, [deckKeys, selectedDeckKey]);
+
+  // Pick a random slide within active deck
+  const handleRandomSlide = useCallback(() => {
+    if (slides.length <= 1) return;
+    let randomIndex = Math.floor(Math.random() * slides.length);
+    if (randomIndex === currentSlideIndex) {
+      randomIndex = (randomIndex + 1) % slides.length;
+    }
+    handleSelectSlide(randomIndex);
+  }, [slides.length, currentSlideIndex, handleSelectSlide]);
 
   // Mouse wheel scroll to advance or reverse slides in stage view
   const handleWheel = (e) => {
@@ -164,6 +199,12 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
       } else if (e.key === 'End') {
         e.preventDefault();
         handleSelectSlide(slides.length - 1);
+      } else if (e.key === 'r' && !e.shiftKey) {
+        e.preventDefault();
+        handleRandomSlide();
+      } else if (e.key === 'R' || (e.key === 'r' && e.shiftKey)) {
+        e.preventDefault();
+        handleRandomDeck();
       } else if (e.key === 'n' || e.key === 'N') {
         setShowNotes((prev) => !prev);
       } else if (e.key === 'g' || e.key === 'G') {
@@ -186,19 +227,7 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, slides.length, viewMode]);
-
-  // Filtered decks list by subject and search query
-  const deckKeys = Object.keys(SLIDE_DECKS).filter((key) => {
-    const deck = SLIDE_DECKS[key];
-    const matchesSubject = subjectFilter === 'all' || deck.subject === subjectFilter;
-    const matchesSearch =
-      searchQuery.trim() === '' ||
-      deck.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      deck.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      deck.slides.some((s) => s.title.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesSubject && matchesSearch;
-  });
+  }, [handleNext, handlePrev, handleSelectSlide, handleRandomSlide, handleRandomDeck, slides.length, viewMode]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4">
@@ -262,6 +291,16 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
               ))}
             </div>
 
+            {/* Random Deck / Course Material Button */}
+            <button
+              onClick={handleRandomDeck}
+              className="flex items-center space-x-1.5 px-3 py-1 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-700/50 hover:border-amber-500 rounded-lg text-xs font-mono font-medium transition-all shadow-sm active:scale-95"
+              title="Pick a course material deck at random (Shortcut: Shift+R)"
+            >
+              <Shuffle className="w-3.5 h-3.5 text-amber-400" />
+              <span>Random Deck</span>
+            </button>
+
             {/* View Mode Toggle: Stage vs Continuous Scroll */}
             <div className="flex items-center bg-[#121215] p-1 rounded-lg border border-[#27272a]">
               <button
@@ -294,6 +333,14 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
 
         {/* Scrollable Deck Selector Strip */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            onClick={handleRandomDeck}
+            className="px-3 py-1.5 rounded-md text-xs font-mono whitespace-nowrap transition-all flex items-center space-x-1.5 shrink-0 bg-amber-950/40 text-amber-300 border border-amber-800/60 hover:bg-amber-900/50 hover:border-amber-500 shadow-sm font-semibold active:scale-95"
+            title="Pick a random course material deck (Shift+R)"
+          >
+            <Shuffle className="w-3.5 h-3.5 text-amber-400" />
+            <span>🎲 Random Deck</span>
+          </button>
           {deckKeys.map((key) => {
             const deck = SLIDE_DECKS[key];
             const isSelected = key === selectedDeckKey;
@@ -495,6 +542,16 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                   <span className="hidden sm:inline">Grid (G)</span>
                 </button>
 
+                {/* Random Slide Jump Button */}
+                <button
+                  onClick={handleRandomSlide}
+                  className="px-2.5 py-1 rounded bg-zinc-900 text-amber-400 border border-amber-500/30 hover:border-amber-400 hover:text-amber-300 hover:bg-zinc-850 text-xs font-mono flex items-center space-x-1.5 transition-all shadow-sm active:scale-95"
+                  title="Jump to a random slide in this deck (Key: R)"
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Random (R)</span>
+                </button>
+
                 {/* Print Handout Button */}
                 <button
                   onClick={() => window.print()}
@@ -512,6 +569,36 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                 >
                   {isFullscreen ? <Minimize className="w-3.5 h-3.5" /> : <Maximize className="w-3.5 h-3.5" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Interactive Slide Slider & Scrubber Bar */}
+            <div className="px-4 py-2 bg-[#0d0d10] border-b border-[#27272a] flex items-center gap-3">
+              <div className="flex items-center space-x-1 text-zinc-400 shrink-0">
+                <Sliders className="w-3.5 h-3.5 text-zinc-400" />
+                <span className="text-[11px] font-mono font-medium hidden sm:inline">Slider:</span>
+              </div>
+
+              {/* Range Slider Track */}
+              <div className="flex-1 flex items-center gap-2">
+                <span className="text-[10px] font-mono text-zinc-500">1</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={Math.max(0, slides.length - 1)}
+                  value={currentSlideIndex}
+                  onChange={(e) => handleSelectSlide(Number(e.target.value))}
+                  className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-zinc-200 hover:accent-amber-400 transition-all focus:outline-none focus:ring-1 focus:ring-zinc-600"
+                  title={`Slide ${currentSlideIndex + 1} of ${slides.length}`}
+                />
+                <span className="text-[10px] font-mono text-zinc-500">{slides.length}</span>
+              </div>
+
+              {/* Slide Position Counter Badge */}
+              <div className="flex items-center space-x-2 shrink-0">
+                <span className="px-2 py-0.5 rounded bg-zinc-850 text-zinc-200 font-mono text-[11px] border border-zinc-700 font-semibold">
+                  {currentSlideIndex + 1} / {slides.length}
+                </span>
               </div>
             </div>
 
@@ -692,8 +779,24 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
                 >
                   <ChevronsRight className="w-3.5 h-3.5" />
                 </button>
-                <span className="text-[11px] text-zinc-400 font-mono hidden md:inline">
-                  [← / → / Wheel] Navigate • [S] Slide List • [N] Notes • [G] Grid
+                <button
+                  onClick={handleRandomSlide}
+                  className="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-amber-400 border border-zinc-800 hover:border-amber-500/50 transition-all text-xs font-mono flex items-center space-x-1"
+                  title="Random Slide (Key: R)"
+                >
+                  <Shuffle className="w-3 h-3" />
+                  <span className="hidden sm:inline">Random Slide (R)</span>
+                </button>
+                <button
+                  onClick={handleRandomDeck}
+                  className="px-2 py-1 rounded bg-amber-950/40 hover:bg-amber-900/50 text-amber-300 border border-amber-800/50 hover:border-amber-500 transition-all text-xs font-mono flex items-center space-x-1"
+                  title="Random Material Deck (Key: Shift+R)"
+                >
+                  <Shuffle className="w-3 h-3" />
+                  <span className="hidden sm:inline">Random Material</span>
+                </button>
+                <span className="text-[11px] text-zinc-400 font-mono hidden xl:inline">
+                  [← / → / Wheel] Navigate • [R] Random • [S] List • [N] Notes • [G] Grid
                 </span>
               </div>
 
