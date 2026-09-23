@@ -11,7 +11,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "gen-code": "node scripts/generateCode.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",

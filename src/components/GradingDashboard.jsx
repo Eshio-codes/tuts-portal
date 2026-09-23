@@ -3,9 +3,10 @@ import { INITIAL_SUBMISSIONS, EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
 import { calculateGradeBadge } from '../utils/gradingEngine';
 import { MathTex, MathText } from './MathTex';
+import AccessKeyModal from './AccessKeyModal';
 import {
   Award, CheckCircle2, Clock, Download,
-  FileText, User, ChevronRight, Save, Trash2, Edit3, Filter, Check
+  FileText, User, ChevronRight, Save, Trash2, Edit3, Filter, Check, KeyRound
 } from 'lucide-react';
 
 export default function GradingDashboard() {
@@ -16,6 +17,7 @@ export default function GradingDashboard() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [savedBanner, setSavedBanner] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
 
   // Load submissions from LocalStorage merged with initial defaults
   useEffect(() => {
@@ -143,6 +145,13 @@ export default function GradingDashboard() {
         </div>
 
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsKeyModalOpen(true)}
+            className="px-3 py-1.5 rounded-md bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 border border-amber-800/60 text-xs font-mono flex items-center space-x-1.5 transition-all"
+          >
+            <KeyRound className="w-3.5 h-3.5 text-amber-400" />
+            <span>Access Codes & Keys</span>
+          </button>
           <button
             onClick={handleExportCSV}
             className="px-3 py-1.5 rounded-md bg-[#121215] hover:bg-zinc-850 text-zinc-200 border border-[#27272a] text-xs font-mono flex items-center space-x-1.5 transition-all"
@@ -429,6 +438,12 @@ export default function GradingDashboard() {
         </div>
 
       </div>
+
+      {/* Access Key & Code Generator Modal */}
+      <AccessKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+      />
 
     </div>
   );
