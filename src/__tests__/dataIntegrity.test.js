@@ -36,6 +36,11 @@ describe('Data Integrity - Assessment & Question Bank Cross-References', () => {
       } else if (q.type === 'numeric') {
         expect(typeof q.correctAnswer).toBe('number');
         expect(isNaN(q.correctAnswer)).toBe(false);
+        // Ensure textbook LaTeX formulas and step-by-step derivations exist for numeric problems
+        expect(typeof q.formula).toBe('string');
+        expect(q.formula.trim().length).toBeGreaterThan(0);
+        expect(typeof q.solution).toBe('string');
+        expect(q.solution.trim().length).toBeGreaterThan(0);
       } else if (q.type === 'free-response') {
         expect(q.points).toBeGreaterThan(0);
       }

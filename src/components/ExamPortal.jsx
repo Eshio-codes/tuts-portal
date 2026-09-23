@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { EXAMS } from '../data/examData';
 import { QUESTION_BANK } from '../data/questionBank';
 import { MathTex, MathText } from './MathTex';
-import { gradeExamSubmission } from '../utils/gradingEngine';
+import { gradeExamSubmission, calculateGradeBadge } from '../utils/gradingEngine';
 import {
   Clock, Flag, CheckCircle2, AlertTriangle, Send,
   ChevronLeft, ChevronRight, FileText, Award, Check, RotateCcw,
-  ShieldAlert, ShieldCheck, AlertOctagon, Lock, Unlock, KeyRound, Sparkles
+  ShieldAlert, ShieldCheck, AlertOctagon, Lock, Unlock, KeyRound, Sparkles,
+  XCircle, BookOpen, Printer, ArrowLeft
 } from 'lucide-react';
 
 export default function ExamPortal({
@@ -43,6 +44,7 @@ export default function ExamPortal({
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(60 * 60);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submittedReceipt, setSubmittedReceipt] = useState(null);
+  const [reviewFilter, setReviewFilter] = useState('all'); // 'all' | 'incorrect' | 'correct'
 
   // Sync prop changes into state and verify selected exam is allowed
   useEffect(() => {
@@ -173,6 +175,8 @@ export default function ExamPortal({
       studentName: studentName || 'Student',
       studentId: studentId || 'STU-2026',
       examId: activeExam.id,
+      examTitle: activeExam.title,
+      subject: activeExam.subject,
       submittedAt: new Date().toISOString(),
       status: isViolation ? 'Flagged' : 'Pending',
       proctorViolation: isViolation,
@@ -182,7 +186,8 @@ export default function ExamPortal({
       totalScore: autoScore,
       maxScore: activeExam.totalPoints,
       percentage: Math.round((autoScore / activeExam.totalPoints) * 100),
-      feedback: proctorOptions.feedback || 'Automated objective score recorded. Awaiting tutor review.'
+      feedback: proctorOptions.feedback || 'Automated objective score recorded. Awaiting tutor review.',
+      questions: examQuestions
     };
 
     // Save to LocalStorage
@@ -619,81 +624,303 @@ export default function ExamPortal({
         </div>
       )}
 
-      {/* 3. Submission Complete Receipt */}
+      {/* 3. Submission Complete Receipt & Solution Review */}
       {submittedReceipt && (
-        <div className="max-w-xl mx-auto p-6 rounded-lg bg-[#121215] border border-[#27272a] shadow-xl text-center space-y-5">
-          {submittedReceipt.proctorViolation ? (
-            <div className="w-12 h-12 rounded-full bg-rose-950/50 border border-rose-800 text-rose-400 flex items-center justify-center mx-auto">
-              <ShieldAlert className="w-6 h-6" />
-            </div>
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-emerald-950/50 border border-emerald-800 text-emerald-400 flex items-center justify-center mx-auto">
-              <Check className="w-6 h-6" />
-            </div>
-          )}
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Top Score Banner */}
+          <div className="p-6 rounded-xl bg-[#121215] border border-[#27272a] shadow-xl space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#27272a]">
+              <div className="flex items-start space-x-3.5">
+                {submittedReceipt.proctorViolation ? (
+                  <div className="w-11 h-11 rounded-full bg-rose-950/50 border border-rose-800 text-rose-400 flex items-center justify-center shrink-0">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                ) : (
+                  <div className="w-11 h-11 rounded-full bg-emerald-950/50 border border-emerald-800 text-emerald-400 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                )}
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-850 text-zinc-300 font-semibold border border-zinc-700 uppercase">
+                      {submittedReceipt.proctorViolation ? 'Auto-Submitted (Flagged)' : 'Official Assessment Result'}
+                    </span>
+                    <span className="text-xs font-mono text-zinc-500">{submittedReceipt.id}</span>
+                  </div>
+                  <h2 className="text-lg font-bold text-zinc-100 mt-1">
+                    {submittedReceipt.studentName} <span className="text-zinc-400 text-xs font-normal">({submittedReceipt.studentId})</span>
+                  </h2>
+                  <p className="text-xs text-zinc-400">
+                    <MathText text={submittedReceipt.examTitle || activeExam?.title || 'Examination Assessment'} />
+                  </p>
+                </div>
+              </div>
 
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-zinc-100">
-              {submittedReceipt.proctorViolation ? 'Exam Auto-Submitted (Proctor Violation)' : 'Examination Submitted'}
-            </h2>
-            <p className="text-xs text-zinc-400 font-mono">Reference: {submittedReceipt.id}</p>
+              {/* Score Badges */}
+              <div className="flex items-center space-x-3">
+                <div className="text-right">
+                  <div className="text-[10px] text-zinc-500 font-mono uppercase">Calculated Score</div>
+                  <div className="text-xl font-mono font-bold text-zinc-100">
+                    {submittedReceipt.totalScore} / {submittedReceipt.maxScore} <span className="text-sm text-zinc-400">({submittedReceipt.percentage}%)</span>
+                  </div>
+                </div>
+                {(() => {
+                  const badge = calculateGradeBadge(submittedReceipt.percentage || 0);
+                  return (
+                    <span className={`text-sm px-3 py-1.5 rounded-lg font-bold font-mono border ${badge.style}`}>
+                      {badge.grade}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Proctor Violation Notice */}
+            {submittedReceipt.proctorViolation && (
+              <div className="p-3.5 rounded-lg bg-rose-950/30 border border-rose-800/60 text-left font-mono text-xs text-rose-300 space-y-1">
+                <div className="font-semibold flex items-center space-x-1.5 text-rose-200">
+                  <AlertOctagon className="w-4 h-4 text-rose-400" />
+                  <span>Security Flag Recorded</span>
+                </div>
+                <div className="text-[11px] text-rose-300/90 leading-relaxed">
+                  {submittedReceipt.violationReason || 'Window focus lost or browser tab switched during active examination.'}
+                </div>
+                <div className="text-[10px] text-rose-400/80 pt-1">
+                  Answers at the moment of the violation have been locked and submitted to the Examiner Gradebook.
+                </div>
+              </div>
+            )}
+
+            {/* Quick Metadata Bar */}
+            <div className="p-3 rounded-lg bg-[#09090b] border border-[#27272a] grid grid-cols-2 sm:grid-cols-4 gap-3 text-left font-mono text-xs">
+              <div>
+                <div className="text-zinc-500 text-[10px] uppercase">Submitted At</div>
+                <div className="text-zinc-300">{new Date(submittedReceipt.submittedAt).toLocaleTimeString()}</div>
+              </div>
+              <div>
+                <div className="text-zinc-500 text-[10px] uppercase">Questions Scored</div>
+                <div className="text-zinc-200">{submittedReceipt.questions?.length || 0} Problems</div>
+              </div>
+              <div>
+                <div className="text-zinc-500 text-[10px] uppercase">Status</div>
+                <span className={submittedReceipt.proctorViolation ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>
+                  {submittedReceipt.status}
+                </span>
+              </div>
+              <div>
+                <div className="text-zinc-500 text-[10px] uppercase">Review Mode</div>
+                <span className="text-cyan-400 font-semibold">KaTeX Derivations Active</span>
+              </div>
+            </div>
           </div>
 
-          {submittedReceipt.proctorViolation && (
-            <div className="p-3.5 rounded-md bg-rose-950/30 border border-rose-800/60 text-left font-mono text-xs text-rose-300 space-y-1">
-              <div className="font-semibold flex items-center space-x-1.5 text-rose-200">
-                <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
-                <span>Security Flag Recorded</span>
+          {/* Solutions & Derivations Review Breakdown */}
+          <div className="space-y-4">
+            {/* Filter and Action Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+              <div>
+                <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-zinc-400" />
+                  <span>Question-by-Question Solution & Derivation Review</span>
+                </h3>
+                <p className="text-[11px] text-zinc-500 font-mono">
+                  Inspect official textbook formulas, correct answers, and step-by-step mathematical working.
+                </p>
               </div>
-              <div className="text-[11px] text-rose-300/90 leading-relaxed">
-                {submittedReceipt.violationReason || 'Window focus lost or browser tab switched during active examination.'}
-              </div>
-              <div className="text-[10px] text-rose-400/80 pt-1">
-                This event has been logged with timestamp in the Tutor Gradebook.
-              </div>
-            </div>
-          )}
 
-          <div className="p-4 rounded bg-[#09090b] border border-[#27272a] grid grid-cols-2 gap-3 text-left font-mono text-xs">
-            <div>
-              <div className="text-zinc-500 text-[11px]">Candidate</div>
-              <div className="text-zinc-200 font-semibold">{submittedReceipt.studentName}</div>
-            </div>
-            <div>
-              <div className="text-zinc-500 text-[11px]">Timestamp</div>
-              <div className="text-zinc-300">
-                {new Date(submittedReceipt.submittedAt).toLocaleTimeString()}
+              <div className="flex items-center space-x-2">
+                {/* Filter Tabs */}
+                <div className="flex items-center space-x-1 bg-[#121215] p-0.5 rounded-lg border border-[#27272a] text-xs font-mono">
+                  {['all', 'incorrect', 'correct'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setReviewFilter(st)}
+                      className={`px-2.5 py-1 rounded capitalize transition-colors ${
+                        reviewFilter === st ? 'bg-zinc-800 text-zinc-100 font-semibold' : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => window.print()}
+                  className="px-2.5 py-1 rounded-lg bg-[#121215] hover:bg-zinc-850 text-zinc-300 border border-[#27272a] text-xs font-mono flex items-center space-x-1.5 transition-all"
+                  title="Print Review Report"
+                >
+                  <Printer className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="hidden sm:inline">Print</span>
+                </button>
               </div>
             </div>
-            <div>
-              <div className="text-zinc-500 text-[11px]">Auto-Scored Marks</div>
-              <div className="text-zinc-100 font-bold">
-                {submittedReceipt.totalScore} / {submittedReceipt.maxScore}
-              </div>
-            </div>
-            <div>
-              <div className="text-zinc-500 text-[11px]">Status</div>
-              <span className={submittedReceipt.proctorViolation ? 'text-rose-400 font-semibold' : 'text-emerald-400 font-semibold'}>
-                {submittedReceipt.status}
-              </span>
-            </div>
+
+            {/* Questions List */}
+            {(() => {
+              const questionsList = submittedReceipt.questions || [];
+              const filteredQuestions = questionsList.filter((q) => {
+                const userScore = submittedReceipt.scores?.[q.id] || 0;
+                const maxPoints = q.points || (q.type === 'multiple-choice' ? 4 : 4);
+                const isCorrect = userScore >= maxPoints;
+
+                if (reviewFilter === 'incorrect') return !isCorrect;
+                if (reviewFilter === 'correct') return isCorrect;
+                return true;
+              });
+
+              if (filteredQuestions.length === 0) {
+                return (
+                  <div className="p-8 text-center rounded-xl bg-[#121215] border border-[#27272a] text-zinc-500 text-xs font-mono">
+                    No questions match the current "{reviewFilter}" filter.
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-4">
+                  {filteredQuestions.map((q, idx) => {
+                    const studentAns = submittedReceipt.answers?.[q.id];
+                    const userScore = submittedReceipt.scores?.[q.id] !== undefined ? submittedReceipt.scores[q.id] : 0;
+                    const maxPoints = q.points || (q.type === 'multiple-choice' ? 4 : 4);
+                    const isCorrect = userScore >= maxPoints;
+
+                    return (
+                      <div
+                        key={q.id}
+                        className={`p-5 rounded-xl border space-y-3.5 transition-all ${
+                          isCorrect
+                            ? 'bg-[#121215] border-emerald-900/40'
+                            : 'bg-[#121215] border-rose-900/40'
+                        }`}
+                      >
+                        {/* Question Title & Score Header */}
+                        <div className="flex items-center justify-between border-b border-[#27272a] pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            {isCorrect ? (
+                              <span className="flex items-center space-x-1 text-emerald-400 text-xs font-mono font-semibold bg-emerald-950/50 border border-emerald-800/60 px-2 py-0.5 rounded">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Correct (+{userScore}/{maxPoints})</span>
+                              </span>
+                            ) : (
+                              <span className="flex items-center space-x-1 text-rose-400 text-xs font-mono font-semibold bg-rose-950/50 border border-rose-800/60 px-2 py-0.5 rounded">
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span>Incorrect ({userScore}/{maxPoints})</span>
+                              </span>
+                            )}
+                            <span className="text-xs font-mono text-zinc-400 hidden sm:inline">
+                              Problem {idx + 1} • <MathText text={q.title} />
+                            </span>
+                          </div>
+
+                          <span className="text-xs font-mono text-zinc-500 uppercase">
+                            {q.type}
+                          </span>
+                        </div>
+
+                        {/* Prompt */}
+                        <div className="text-xs text-zinc-200 leading-relaxed">
+                          <MathText text={q.prompt} />
+                        </div>
+
+                        {/* Candidate Answer */}
+                        <div className="space-y-1">
+                          <div className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                            Candidate Submitted Answer:
+                          </div>
+                          <div className={`p-2.5 rounded-lg border text-xs font-mono ${
+                            isCorrect
+                              ? 'bg-emerald-950/20 border-emerald-800/40 text-emerald-200'
+                              : 'bg-rose-950/20 border-rose-800/40 text-rose-200'
+                          }`}>
+                            {q.type === 'multiple-choice' ? (
+                              studentAns !== undefined ? (
+                                <span>
+                                  Choice {String.fromCharCode(65 + studentAns)}: <MathText text={q.options[studentAns]} />
+                                </span>
+                              ) : (
+                                <span className="text-zinc-500 italic">No answer provided</span>
+                              )
+                            ) : (
+                              studentAns !== undefined && studentAns !== '' ? (
+                                <MathText text={String(studentAns)} />
+                              ) : (
+                                <span className="text-zinc-500 italic">No response submitted</span>
+                              )
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Official Solution, KaTeX Formula & Step-by-Step Derivation */}
+                        <div className="p-3.5 rounded-lg bg-[#09090b] border border-zinc-800 space-y-2.5 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono font-semibold uppercase text-zinc-400 tracking-wider">
+                              Official Solution & Mathematical Working
+                            </span>
+                            {q.correctAnswer !== undefined && (
+                              <span className="text-xs font-mono text-emerald-300 bg-emerald-950/50 border border-emerald-800/50 px-2 py-0.5 rounded">
+                                Correct Answer:{' '}
+                                <strong>
+                                  {q.type === 'multiple-choice'
+                                    ? `Choice ${String.fromCharCode(65 + q.correctAnswer)} (${q.options?.[q.correctAnswer]})`
+                                    : `${q.correctAnswer} ${q.unit || ''} ${q.tolerance !== undefined ? `(±${q.tolerance})` : ''}`}
+                                </strong>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Governing Formula in textbook LaTeX */}
+                          {q.formula && (
+                            <div className="p-2.5 rounded bg-[#121215] border border-zinc-800 space-y-1">
+                              <div className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                                Governing Formula:
+                              </div>
+                              <div className="text-xs text-zinc-100 font-mono overflow-x-auto py-0.5">
+                                <MathText text={q.formula} />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Step-by-Step Derivation */}
+                          {(q.solution || q.modelAnswer || q.explanation) && (
+                            <div className="p-2.5 rounded bg-[#121215] border border-zinc-800 space-y-1">
+                              <div className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                                Step-by-Step Derivation:
+                              </div>
+                              <div className="text-xs text-zinc-200 leading-relaxed font-mono whitespace-pre-line overflow-x-auto">
+                                <MathText text={q.solution || q.modelAnswer || q.explanation} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
 
-          <p className="text-xs text-zinc-400">
-            {submittedReceipt.proctorViolation
-              ? 'Answers at the moment of the security violation have been captured and preserved.'
-              : 'Deterministic questions have been scored automatically and recorded to the gradebook.'}
-          </p>
+          {/* Bottom Navigation */}
+          <div className="flex items-center justify-between pt-4 border-t border-[#27272a]">
+            <button
+              onClick={() => {
+                setSubmittedReceipt(null);
+                setIsExamActive(false);
+              }}
+              className="px-4 py-2 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-200 text-xs font-mono border border-zinc-700 flex items-center space-x-1.5 transition-all"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Return to Exam Catalog</span>
+            </button>
 
-          <button
-            onClick={() => {
-              setSubmittedReceipt(null);
-              setIsExamActive(false);
-            }}
-            className="px-4 py-2 rounded bg-zinc-850 hover:bg-zinc-800 text-zinc-200 text-xs font-mono border border-zinc-700"
-          >
-            Return to Exam Index
-          </button>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-950 text-xs font-mono font-semibold transition-all"
+            >
+              Back to Top
+            </button>
+          </div>
         </div>
       )}
 

@@ -199,7 +199,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
               <span>Bookmarks ({bookmarkedIds.length})</span>
             </button>
 
-            {submittedInView.length > 0 && (
+            {submittedCount > 0 && (
               <button
                 onClick={handleResetAll}
                 className="px-2.5 py-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-mono flex items-center space-x-1.5 transition-all"
@@ -537,12 +537,61 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                   )}
                 </div>
 
+                {/* Instant Incorrect Answer Formula & Derivation Breakdown */}
+                {isSubmitted && !isCorrect && (
+                  <div className="mt-4 p-4 rounded-lg bg-rose-950/20 border border-rose-800/40 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-xs font-semibold text-rose-300 font-mono">
+                        <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>Incorrect — Solution & Mathematical Derivation</span>
+                      </div>
+                      <div className="text-xs font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/50 px-2 py-0.5 rounded">
+                        Correct Answer:{' '}
+                        <span className="font-bold text-emerald-300">
+                          {q.type === 'multiple-choice'
+                            ? `(${String.fromCharCode(65 + q.correctAnswer)}) ${q.options[q.correctAnswer]}`
+                            : `${q.correctAnswer} ${q.unit || ''}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {q.formula && (
+                      <div className="p-3 rounded bg-[#09090b] border border-zinc-800">
+                        <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                          <span>Governing Formula:</span>
+                        </div>
+                        <div className="text-xs text-zinc-100 font-mono overflow-x-auto py-1">
+                          <MathText text={q.formula} />
+                        </div>
+                      </div>
+                    )}
+
+                    {(q.solution || q.explanation) && (
+                      <div className="p-3 rounded bg-[#09090b] border border-zinc-800 space-y-1.5">
+                        <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+                          Step-by-Step Derivation:
+                        </div>
+                        <div className="text-xs text-zinc-200 leading-relaxed font-mono whitespace-pre-line overflow-x-auto">
+                          <MathText text={q.solution || q.explanation} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Expanded Solution Drawer */}
                 {showSol && (
                   <div className="mt-4 p-4 rounded-md bg-[#09090b] border border-[#27272a] space-y-3">
                     <div className="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-wider">
                       Model Solution & Derivation
                     </div>
+
+                    {q.formula && (
+                      <div className="p-2.5 rounded bg-[#121215] border border-zinc-800">
+                        <div className="text-[11px] font-mono text-zinc-400 uppercase mb-1">Governing Formula:</div>
+                        <MathText text={q.formula} />
+                      </div>
+                    )}
 
                     {q.explanation && (
                       <div className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line">

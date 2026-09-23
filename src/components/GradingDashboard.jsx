@@ -335,8 +335,23 @@ export default function GradingDashboard() {
                           Teacher Solution & Rubric Criteria
                         </div>
                         {q.correctAnswer !== undefined && (
-                          <div className="text-zinc-300 text-xs">
-                            <span className="text-zinc-500">Correct Option:</span> Choice {String.fromCharCode(65 + q.correctAnswer)} (<MathText text={q.options?.[q.correctAnswer]} />)
+                          <div className="text-zinc-300 text-xs font-mono">
+                            <span className="text-zinc-500">Correct Answer:</span>{' '}
+                            {q.type === 'multiple-choice' ? (
+                              <span>Choice {String.fromCharCode(65 + q.correctAnswer)} (<MathText text={q.options?.[q.correctAnswer]} />)</span>
+                            ) : (
+                              <span className="text-emerald-300 font-semibold">{q.correctAnswer} {q.unit || ''} {q.tolerance !== undefined && `(±${q.tolerance})`}</span>
+                            )}
+                          </div>
+                        )}
+                        {q.formula && (
+                          <div className="p-2.5 rounded bg-[#09090b] border border-zinc-800 space-y-1">
+                            <div className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                              Governing Formula:
+                            </div>
+                            <div className="text-xs text-zinc-100 font-mono overflow-x-auto py-0.5">
+                              <MathText text={q.formula} />
+                            </div>
                           </div>
                         )}
                         {q.solution && (
