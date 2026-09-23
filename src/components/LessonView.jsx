@@ -113,7 +113,7 @@ export default function LessonView() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-mono font-semibold text-zinc-300">Unit 0{sess.session}</span>
+                    <span className="text-xs font-mono font-semibold text-zinc-300">Unit {String(sess.session).padStart(2, '0')}</span>
                     <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
                       sess.status === 'Completed'
                         ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/40'

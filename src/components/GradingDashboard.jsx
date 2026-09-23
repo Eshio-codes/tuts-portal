@@ -14,6 +14,8 @@ export default function GradingDashboard() {
   const [gradingScores, setGradingScores] = useState({});
   const [feedbackNote, setFeedbackNote] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [savedBanner, setSavedBanner] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   // Load submissions from LocalStorage merged with initial defaults
   useEffect(() => {
@@ -80,16 +82,16 @@ export default function GradingDashboard() {
 
     setSubmissions(updatedSubmissions);
     localStorage.setItem('tuts_submissions', JSON.stringify(updatedSubmissions));
-    alert('Grade and qualitative feedback saved.');
+    setSavedBanner(true);
+    setTimeout(() => setSavedBanner(false), 3000);
   };
 
   const handleDeleteSubmission = (subId) => {
-    if (confirm('Delete this submission record?')) {
-      const updated = submissions.filter((s) => s.id !== subId);
-      setSubmissions(updated);
-      localStorage.setItem('tuts_submissions', JSON.stringify(updated));
-      if (selectedSubId === subId) setSelectedSubId(null);
-    }
+    const updated = submissions.filter((s) => s.id !== subId);
+    setSubmissions(updated);
+    localStorage.setItem('tuts_submissions', JSON.stringify(updated));
+    if (selectedSubId === subId) setSelectedSubId(null);
+    setConfirmDeleteId(null);
   };
 
   const handleExportCSV = () => {
@@ -369,15 +371,41 @@ export default function GradingDashboard() {
                 />
               </div>
 
+              {/* Saved Success Toast */}
+              {savedBanner && (
+                <div className="flex items-center gap-2 px-3.5 py-2 bg-emerald-950/50 border border-emerald-800/60 rounded-lg text-emerald-300 text-xs font-mono">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Grade and qualitative feedback saved successfully.</span>
+                </div>
+              )}
+
               {/* Save / Delete Actions */}
-              <div className="flex items-center justify-between pt-3 border-t border-[#27272a]">
-                <button
-                  onClick={() => handleDeleteSubmission(activeSubmission.id)}
-                  className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-rose-400 hover:bg-rose-950/40 text-xs font-mono flex items-center space-x-1.5 transition-all"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Delete Record</span>
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#27272a]">
+                {confirmDeleteId === activeSubmission.id ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-rose-400 font-mono">Confirm delete?</span>
+                    <button
+                      onClick={() => handleDeleteSubmission(activeSubmission.id)}
+                      className="px-2.5 py-1 rounded bg-rose-700 hover:bg-rose-600 text-white text-xs font-mono transition-colors"
+                    >
+                      Yes, delete
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-mono transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(activeSubmission.id)}
+                    className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 text-rose-400 hover:bg-rose-950/40 text-xs font-mono flex items-center space-x-1.5 transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Record</span>
+                  </button>
+                )}
 
                 <button
                   onClick={handleSaveGrade}

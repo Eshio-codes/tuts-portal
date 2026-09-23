@@ -70,7 +70,8 @@ export function gradeExamSubmission(examQuestions, answers = {}) {
     scoresMap,
     totalQuestions: examQuestions.length,
     answeredCount,
-    percentage: totalMaxScore > 0 ? Math.round((autoScore / totalMaxScore) * 100) : 0
+    percentage: totalMaxScore > 0 ? Math.round((autoScore / totalMaxScore) * 100) : 0,
+    autoPercentage: maxAutoScore > 0 ? Math.round((autoScore / maxAutoScore) * 100) : 0
   };
 }
 

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { QUESTION_BANK } from '../data/questionBank';
 import { evaluateAnswer } from '../utils/gradingEngine';
 import { MathTex, MathText } from './MathTex';
 import {
   HelpCircle, CheckCircle2, XCircle, ChevronDown,
   ChevronUp, RotateCcw, Award, BookOpen, Check, Search, Filter,
-  Star, Copy, CheckCheck
+  Star, Copy, CheckCheck, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 export default function QuestionBankView({ defaultSubject = 'all' }) {
@@ -20,6 +20,8 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
   const [revealedSolutions, setRevealedSolutions] = useState({});
   const [bookmarkedIds, setBookmarkedIds] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   // Load bookmarks from LocalStorage
   useEffect(() => {
@@ -45,35 +47,93 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
 
   const handleCopyPrompt = (q) => {
     const text = `${q.title}\n\n${q.prompt}`;
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedId(q.id);
-      setTimeout(() => setCopiedId(null), 2000);
-    });
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopiedId(q.id);
+        setTimeout(() => setCopiedId(null), 2000);
+      }).catch(() => fallbackCopy(text, q.id));
+    } else {
+      fallbackCopy(text, q.id);
+    }
   };
 
-  // Filter questions
-  const filteredQuestions = QUESTION_BANK.filter((q) => {
-    if (selectedSubject !== 'all' && q.subject !== selectedSubject) return false;
-    if (selectedDifficulty !== 'all' && q.difficulty !== selectedDifficulty) return false;
-    if (selectedType !== 'all' && q.type !== selectedType) return false;
-    if (selectedSession !== 'all' && q.session !== parseInt(selectedSession, 10)) return false;
-    if (onlyBookmarked && !bookmarkedIds.includes(q.id)) return false;
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      const matchTitle = q.title.toLowerCase().includes(query);
-      const matchPrompt = q.prompt.toLowerCase().includes(query);
-      if (!matchTitle && !matchPrompt) return false;
+  const fallbackCopy = (text, qId) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedId(qId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
     }
-    return true;
-  });
+  };
 
-  // Performance stats for filtered view
-  const totalInView = filteredQuestions.length;
-  const submittedInView = filteredQuestions.filter(q => submittedStates[q.id]);
-  const correctInView = submittedInView.filter(q => {
-    const result = evaluateAnswer(q, userAnswers[q.id]);
-    return result.isCorrect === true;
-  });
+  // Memoized Filter questions
+  const filteredQuestions = useMemo(() => {
+    return QUESTION_BANK.filter((q) => {
+      if (selectedSubject !== 'all' && q.subject !== selectedSubject) return false;
+      if (selectedDifficulty !== 'all' && q.difficulty !== selectedDifficulty) return false;
+      if (selectedType !== 'all' && q.type !== selectedType) return false;
+      if (selectedSession !== 'all' && q.session !== parseInt(selectedSession, 10)) return false;
+      if (onlyBookmarked && !bookmarkedIds.includes(q.id)) return false;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchTitle = q.title.toLowerCase().includes(query);
+        const matchPrompt = q.prompt.toLowerCase().includes(query);
+        if (!matchTitle && !matchPrompt) return false;
+      }
+      return true;
+    });
+  }, [selectedSubject, selectedDifficulty, selectedType, selectedSession, onlyBookmarked, bookmarkedIds, searchQuery]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSubject, selectedDifficulty, selectedType, selectedSession, onlyBookmarked, searchQuery, pageSize]);
+
+  // Memoized Performance stats for filtered view
+  const { totalInView, submittedCount, correctCount, evaluationsMap } = useMemo(() => {
+    let subCount = 0;
+    let corCount = 0;
+    const evals = {};
+
+    filteredQuestions.forEach((q) => {
+      if (submittedStates[q.id]) {
+        subCount++;
+        const res = evaluateAnswer(q, userAnswers[q.id]);
+        evals[q.id] = res;
+        if (res.isCorrect === true) {
+          corCount++;
+        }
+      }
+    });
+
+    return {
+      totalInView: filteredQuestions.length,
+      submittedCount: subCount,
+      correctCount: corCount,
+      evaluationsMap: evals
+    };
+  }, [filteredQuestions, submittedStates, userAnswers]);
+
+  // Pagination slicing
+  const numericPageSize = pageSize === 'all' ? filteredQuestions.length : Number(pageSize);
+  const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(filteredQuestions.length / numericPageSize));
+  const startIndex = (currentPage - 1) * numericPageSize;
+  const endIndex = Math.min(startIndex + numericPageSize, filteredQuestions.length);
+
+  const displayedQuestions = useMemo(() => {
+    if (pageSize === 'all') return filteredQuestions;
+    return filteredQuestions.slice(startIndex, endIndex);
+  }, [filteredQuestions, pageSize, startIndex, endIndex]);
 
   const handleSelectOption = (qId, optionIdx) => {
     if (submittedStates[qId]) return;
@@ -231,7 +291,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
         </div>
 
         {/* Live Score Tracker Ledger */}
-        <div className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-[#121215] border border-[#27272a] text-xs font-mono text-zinc-400">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-3.5 py-2 rounded-lg bg-[#121215] border border-[#27272a] text-xs font-mono text-zinc-400">
           <div className="flex items-center space-x-4">
             <div>
               <span className="text-zinc-500 mr-1.5">Total Problems:</span>
@@ -239,20 +299,20 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
             </div>
             <div>
               <span className="text-zinc-500 mr-1.5">Attempted:</span>
-              <span className="text-zinc-200 font-semibold">{submittedInView.length}</span>
+              <span className="text-zinc-200 font-semibold">{submittedCount}</span>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
             <div>
               <span className="text-zinc-500 mr-1.5">Correct:</span>
-              <span className="text-emerald-400 font-semibold">{correctInView.length}</span>
+              <span className="text-emerald-400 font-semibold">{correctCount}</span>
             </div>
-            {submittedInView.length > 0 && (
+            {submittedCount > 0 && (
               <div>
                 <span className="text-zinc-500 mr-1.5">Accuracy:</span>
                 <span className="text-zinc-100 font-semibold">
-                  {Math.round((correctInView.length / (submittedInView.filter(q => q.type !== 'free-response').length || 1)) * 100)}%
+                  {Math.round((correctCount / (submittedCount || 1)) * 100)}%
                 </span>
               </div>
             )}
@@ -267,7 +327,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
             <p className="text-zinc-400 text-xs font-mono">No practice problems match the selected filter criteria.</p>
           </div>
         ) : (
-          filteredQuestions.map((q, qIndex) => {
+          displayedQuestions.map((q, qIndex) => {
             const isSubmitted = submittedStates[q.id];
             const answer = userAnswers[q.id];
             const showSol = revealedSolutions[q.id];
@@ -275,7 +335,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
 
             let isCorrect = false;
             if (isSubmitted) {
-              const evalResult = evaluateAnswer(q, answer);
+              const evalResult = evaluationsMap[q.id] || evaluateAnswer(q, answer);
               isCorrect = evalResult.isCorrect === true;
             }
 
@@ -288,7 +348,7 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-[#27272a]">
                   <div className="flex items-center space-x-2">
                     <span className="text-xs font-mono font-semibold text-zinc-200">
-                      Problem {qIndex + 1}
+                      Problem {startIndex + qIndex + 1}
                     </span>
                     <span className="text-zinc-600 font-mono">•</span>
                     <span className="text-xs font-mono uppercase text-zinc-400">
@@ -415,10 +475,11 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
                       </label>
                       <textarea
                         rows={4}
+                        disabled={isSubmitted}
                         value={answer || ''}
                         onChange={(e) => handleFreeResponseChange(q.id, e.target.value)}
                         placeholder="Type mathematical proof steps or derivations..."
-                        className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 font-mono text-xs focus:outline-none focus:border-zinc-500"
+                        className="w-full px-3 py-2 bg-[#09090b] border border-[#27272a] rounded-md text-zinc-100 font-mono text-xs focus:outline-none focus:border-zinc-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </div>
                   )}
@@ -529,6 +590,63 @@ export default function QuestionBankView({ defaultSubject = 'all' }) {
           })
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {filteredQuestions.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[#121215] border border-[#27272a] text-xs font-mono">
+          <div className="flex items-center space-x-2 text-zinc-400">
+            <span>Show:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              className="bg-[#09090b] border border-[#27272a] rounded px-2 py-1 text-zinc-200 focus:outline-none focus:border-zinc-500"
+            >
+              <option value={10}>10 per page</option>
+              <option value={15}>15 per page</option>
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
+              <option value="all">All ({filteredQuestions.length})</option>
+            </select>
+            <span className="text-zinc-500">
+              Showing {filteredQuestions.length === 0 ? 0 : startIndex + 1}–{endIndex} of {filteredQuestions.length}
+            </span>
+          </div>
+
+          {pageSize !== 'all' && totalPages > 1 && (
+            <div className="flex items-center space-x-2 self-end sm:self-auto">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={`p-1.5 rounded border flex items-center space-x-1 transition-all ${
+                  currentPage === 1
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                    : 'bg-[#09090b] border-[#27272a] text-zinc-300 hover:text-zinc-100 hover:border-zinc-600'
+                }`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+
+              <span className="px-2 text-zinc-300">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className={`p-1.5 rounded border flex items-center space-x-1 transition-all ${
+                  currentPage === totalPages
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed'
+                    : 'bg-[#09090b] border-[#27272a] text-zinc-300 hover:text-zinc-100 hover:border-zinc-600'
+                }`}
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );

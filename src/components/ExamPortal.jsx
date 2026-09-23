@@ -9,17 +9,25 @@ import {
   ShieldAlert, ShieldCheck, AlertOctagon
 } from 'lucide-react';
 
-export default function ExamPortal({ onExamSubmitted }) {
+export default function ExamPortal({ studentName: authStudentName = '', isTutor = false, onExamSubmitted }) {
   const [selectedExamId, setSelectedExamId] = useState('exam-stem-s2');
   const [isExamActive, setIsExamActive] = useState(false);
-  const [studentName, setStudentName] = useState('');
+  const [studentName, setStudentName] = useState(authStudentName);
   const [studentId, setStudentId] = useState('');
+  const [startError, setStartError] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(60 * 60);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submittedReceipt, setSubmittedReceipt] = useState(null);
+
+  // Sync prop changes into state
+  useEffect(() => {
+    if (authStudentName && !studentName) {
+      setStudentName(authStudentName);
+    }
+  }, [authStudentName]);
 
   const activeExam = EXAMS.find((e) => e.id === selectedExamId) || EXAMS[0];
 
@@ -28,6 +36,9 @@ export default function ExamPortal({ onExamSubmitted }) {
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
+
+  // Stable ref for handleFinalSubmit to avoid stale closures in proctoring listeners (Bug #22 fix)
+  const finalSubmitRef = useRef(null);
 
   // Collect all questions for this exam
   const examQuestions = activeExam.sections.flatMap((sec) =>
@@ -58,17 +69,28 @@ export default function ExamPortal({ onExamSubmitted }) {
   }, [isExamActive, timeLeftSeconds, submittedReceipt]);
 
   // Anti-cheat Proctoring: Tab switch / Window focus loss auto-submit
+  // Uses finalSubmitRef to avoid stale closures (Bug #22 fix)
   useEffect(() => {
     if (!isExamActive || submittedReceipt) return;
 
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        handleProctorViolation('Tab switch / background tab navigation detected.');
+      if (document.hidden && finalSubmitRef.current) {
+        finalSubmitRef.current({
+          proctorViolation: true,
+          violationReason: 'Tab switch / background tab navigation detected.',
+          feedback: 'AUTO-SUBMITTED BY PROCTORING ENGINE: Anti-cheat security violation (Tab switch / background tab navigation detected). Answers locked at time of event.'
+        });
       }
     };
 
     const handleWindowBlur = () => {
-      handleProctorViolation('Window focus lost / application minimized or switched.');
+      if (finalSubmitRef.current) {
+        finalSubmitRef.current({
+          proctorViolation: true,
+          violationReason: 'Window focus lost / application minimized or switched.',
+          feedback: 'AUTO-SUBMITTED BY PROCTORING ENGINE: Anti-cheat security violation (Window focus lost / application minimized or switched). Answers locked at time of event.'
+        });
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -80,19 +102,12 @@ export default function ExamPortal({ onExamSubmitted }) {
     };
   }, [isExamActive, submittedReceipt]);
 
-  const handleProctorViolation = (reason) => {
-    handleFinalSubmit({
-      proctorViolation: true,
-      violationReason: reason,
-      feedback: `AUTO-SUBMITTED BY PROCTORING ENGINE: Anti-cheat security violation (${reason}). Answers locked at time of event.`
-    });
-  };
-
   const handleStartExam = () => {
     if (!studentName.trim()) {
-      alert('Please enter your full name before starting the exam.');
+      setStartError('Please enter your full name before starting the exam.');
       return;
     }
+    setStartError('');
     setIsExamActive(true);
     setTimeLeftSeconds(activeExam.timeLimitMinutes * 60);
     setAnswers({});
@@ -151,6 +166,9 @@ export default function ExamPortal({ onExamSubmitted }) {
       onExamSubmitted(submission);
     }
   };
+
+  // Keep finalSubmitRef up-to-date every render (Bug #22 fix)
+  finalSubmitRef.current = handleFinalSubmit;
 
   const handleAutoSubmit = (reason) => {
     handleFinalSubmit({
@@ -251,6 +269,12 @@ export default function ExamPortal({ onExamSubmitted }) {
               <div>• <span className="text-amber-400 font-semibold">Active Anti-Cheat Enabled:</span> Switching browser tabs, minimizing the window, or losing window focus will instantly auto-submit your exam with a proctoring violation flag.</div>
               <div>• Deterministic Multiple Choice and Numeric inputs are validated automatically upon final submission.</div>
             </div>
+
+            {startError && (
+              <p className="text-xs text-red-400 bg-red-950/40 border border-red-900/50 rounded-md px-3 py-2 font-mono">
+                {startError}
+              </p>
+            )}
 
             <button
               onClick={handleStartExam}

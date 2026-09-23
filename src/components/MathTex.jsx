@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import katex from 'katex';
 
 /**
@@ -16,41 +16,39 @@ function cleanLatexString(raw) {
 }
 
 /**
- * Pure KaTeX Renderer Component
+ * Pure KaTeX Renderer Component (Zero-layout-shift synchronous rendering)
  */
 export function MathTex({ math, block = false, className = '' }) {
-  const containerRef = useRef(null);
   const cleanedMath = cleanLatexString(math);
 
-  useEffect(() => {
-    if (containerRef.current && cleanedMath) {
-      try {
-        katex.render(cleanedMath, containerRef.current, {
-          displayMode: block,
-          throwOnError: false,
-          strict: false,
-          trust: true,
-        });
-      } catch (err) {
-        console.error('KaTeX rendering error:', err);
-        containerRef.current.innerText = cleanedMath;
-      }
+  const html = useMemo(() => {
+    if (!cleanedMath) return '';
+    try {
+      return katex.renderToString(cleanedMath, {
+        displayMode: block,
+        throwOnError: false,
+        strict: false,
+        trust: true,
+      });
+    } catch (err) {
+      console.error('KaTeX renderToString error:', err);
+      return `<span class="text-rose-400 font-mono">${cleanedMath}</span>`;
     }
   }, [cleanedMath, block]);
 
   if (block) {
     return (
       <div
-        ref={containerRef}
         className={`overflow-x-auto my-2 py-1 text-center text-zinc-100 font-serif ${className}`}
+        dangerouslySetInnerHTML={{ __html: html }}
       />
     );
   }
 
   return (
     <span
-      ref={containerRef}
       className={`inline-block px-0.5 text-zinc-100 font-serif align-middle ${className}`}
+      dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }

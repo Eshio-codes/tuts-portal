@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import MathTex from './MathTex';
 import {
   getIEEE754,
@@ -35,7 +35,7 @@ export default function InteractiveTools() {
   // Tool 1: IEEE 754 State
   // ==========================================
   const [floatInput, setFloatInput] = useState(-13.625);
-  const ieee = getIEEE754(floatInput);
+  const ieee = useMemo(() => getIEEE754(floatInput), [floatInput]);
 
   // ==========================================
   // Tool 2: Circuit State
@@ -46,7 +46,10 @@ export default function InteractiveTools() {
   const [r2, setR2] = useState(20);
   const [isParallel, setIsParallel] = useState(false);
 
-  const circuit = calculateDCCircuit({ voltage, internalR, r1, r2, isParallel });
+  const circuit = useMemo(
+    () => calculateDCCircuit({ voltage, internalR, r1, r2, isParallel }),
+    [voltage, internalR, r1, r2, isParallel]
+  );
   const { rLoad, rTotal, currentTotal, terminalVoltage, vR1, vR2, iR1, iR2, pTotal } = circuit;
 
   // ==========================================
@@ -122,14 +125,16 @@ export default function InteractiveTools() {
   const scaleX = (x) => padding + (x / maxXAxis) * plotW;
   const scaleY = (y) => svgHeight - padding - (y / maxYAxis) * plotH;
 
-  const trajectoryPath = [];
-  for (let i = 0; i <= numPlotPoints; i++) {
-    const t = (i / numPlotPoints) * flightTime;
-    const px = ux * t;
-    const py = Math.max(0, initialHeight + uy * t - 0.5 * gravity * t * t);
-    trajectoryPath.push(`${i === 0 ? 'M' : 'L'} ${scaleX(px).toFixed(1)} ${scaleY(py).toFixed(1)}`);
-  }
-  const trajectoryD = trajectoryPath.join(' ');
+  const trajectoryD = useMemo(() => {
+    const trajectoryPath = [];
+    for (let i = 0; i <= numPlotPoints; i++) {
+      const t = (i / numPlotPoints) * flightTime;
+      const px = ux * t;
+      const py = Math.max(0, initialHeight + uy * t - 0.5 * gravity * t * t);
+      trajectoryPath.push(`${i === 0 ? 'M' : 'L'} ${scaleX(px).toFixed(1)} ${scaleY(py).toFixed(1)}`);
+    }
+    return trajectoryPath.join(' ');
+  }, [flightTime, ux, uy, initialHeight, gravity, maxXAxis, maxYAxis, plotW, plotH]);
 
   // ==========================================
   // Tool 5: Newton-Raphson Root Finder State
@@ -183,28 +188,31 @@ export default function InteractiveTools() {
   const [maxIter, setMaxIter] = useState(5);
 
   // Compute Newton-Raphson Iterations
-  const iterations = [];
-  let currX = initialGuess;
-  for (let k = 0; k < maxIter; k++) {
-    const fx = activePreset.f(currX);
-    const dfx = activePreset.df(currX);
-    if (Math.abs(dfx) < 1e-12) {
-      iterations.push({ k, x: currX, fx, dfx, nextX: currX, delta: 0, converged: false, err: 'Zero Derivative' });
-      break;
+  const iterations = useMemo(() => {
+    const list = [];
+    let currX = initialGuess;
+    for (let k = 0; k < maxIter; k++) {
+      const fx = activePreset.f(currX);
+      const dfx = activePreset.df(currX);
+      if (Math.abs(dfx) < 1e-12) {
+        list.push({ k, x: currX, fx, dfx, nextX: currX, delta: 0, converged: false, err: 'Zero Derivative' });
+        break;
+      }
+      const nextX = currX - fx / dfx;
+      const delta = Math.abs(nextX - currX);
+      list.push({
+        k,
+        x: currX,
+        fx,
+        dfx,
+        nextX,
+        delta,
+        converged: delta < 1e-6
+      });
+      currX = nextX;
     }
-    const nextX = currX - fx / dfx;
-    const delta = Math.abs(nextX - currX);
-    iterations.push({
-      k,
-      x: currX,
-      fx,
-      dfx,
-      nextX,
-      delta,
-      converged: delta < 1e-6
-    });
-    currX = nextX;
-  }
+    return list;
+  }, [activePreset, initialGuess, maxIter]);
 
   // ==========================================
   // Tool 6: 2D Matrix Linear Transformation State
@@ -1872,7 +1880,7 @@ export default function InteractiveTools() {
                 <div className="flex justify-between text-[10px] text-zinc-500 font-mono mt-1">
                   <span><MathTex math={`\\omega = ${omega.toFixed(1)}\\text{ rad/s}`} /></span>
                   <button
-                    onClick={() => setAcFreq(Math.round(resFreq))}
+                    onClick={() => setAcFreq(parseFloat(resFreq.toFixed(1)))}
                     className="text-amber-400 hover:underline"
                     title="Jump to resonant frequency"
                   >

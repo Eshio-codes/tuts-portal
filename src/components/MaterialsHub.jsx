@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { COURSE_MATERIALS } from '../data/materialsData';
 import { MathTex, MathText } from './MathTex';
 import {
   Download, FileText, Presentation, FileCode, Search, Filter,
   Eye, CheckCircle2, BookOpen, ExternalLink, Calculator, Zap, Cpu,
-  Sparkles, Layers, ShieldCheck, ArrowRight, X, Printer
+  Sparkles, Layers, ShieldCheck, ArrowRight, X, Printer, Wifi, WifiOff
 } from 'lucide-react';
 
 export default function MaterialsHub({ onNavigate }) {
@@ -12,6 +12,18 @@ export default function MaterialsHub({ onNavigate }) {
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [previewDoc, setPreviewDoc] = useState(null);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const subjects = [
     { id: 'all', label: 'All Subjects', icon: Layers },
@@ -97,8 +109,18 @@ export default function MaterialsHub({ onNavigate }) {
             <span className="text-zinc-200 font-semibold">{COURSE_MATERIALS.length}</span> Documents
           </div>
           <span className="text-zinc-700">|</span>
-          <div>
-            <span className="text-emerald-400 font-semibold">100%</span> Available Offline
+          <div className="flex items-center space-x-1.5">
+            {isOnline ? (
+              <>
+                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400 font-semibold">Online Hub</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-amber-400 font-semibold">Offline Mode</span>
+              </>
+            )}
           </div>
         </div>
       </div>

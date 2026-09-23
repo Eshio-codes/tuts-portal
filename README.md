@@ -43,7 +43,13 @@ The platform is structured into six core operational environments:
 - **Feedback Engine**: Qualitative feedback recording with automated letter grade calculation ($A^*$, $A$, $B$, $C$, $F$).
 - **CSV Data Export**: RFC 4180 compliant CSV export for importing grades into external academic registries.
 
-### 6. STEM Calculation Instruments (`InteractiveTools.jsx`)
+### 6. Role-Based Cryptographic Authentication (`AuthGate.jsx` & `useAuth.js`)
+- **Client-Side SHA-256 Gate**: Zero-backend cryptographic role authentication powered by the Web Crypto API (`crypto.subtle`).
+- **Tutor Access**: Gated by passphrase (`STEM-TUTOR-2026`) unlocking the Examiner Gradebook, candidate rubric grading, and administrative exports.
+- **Student Exam Gate**: Gated by tutor-issued one-time access codes (`STEM-A1B2`, `STEM-C3D4`, `STEM-E5F6`, `STEM-G7H8`, `STEM-J9K0`).
+- **Session Lifecycle**: Authenticated sessions persist safely in `sessionStorage` with clean Sign Out workflows.
+
+### 7. STEM Calculation Instruments (`InteractiveTools.jsx`)
 Pure mathematical and physical calculation sandboxes backed by testable utilities (`src/utils/stemCalculators.js`):
 1. **IEEE 754 32-Bit Float Decoder**: Live bitfield unpacker breaking single-precision floats into Sign, Biased Exponent (8 bits, bias 127), and Mantissa (23 bits) with exact hex translation.
 2. **DC Circuit Solver**: Series/parallel resistor networks with internal battery resistance ($r$), terminal voltage drops, and branch currents via VDR/CDR.

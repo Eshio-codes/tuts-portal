@@ -176,6 +176,9 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
         handleToggleFullscreen();
       } else if (e.key === 't' || e.key === 'T') {
         setIsTimerRunning((prev) => !prev);
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        window.print();
       } else if (e.key === 'Escape') {
         setShowGrid(false);
       }
@@ -192,7 +195,7 @@ export default function SlidePresenter({ initialDeckId = 'physics-2' }) {
     const matchesSearch =
       searchQuery.trim() === '' ||
       deck.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      deck.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      deck.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deck.slides.some((s) => s.title.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesSubject && matchesSearch;
   });
